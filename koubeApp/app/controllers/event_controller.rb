@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require "open-uri"
 class EventController < ApplicationController
-  # /event/index
+  # /event/list
   # イベント一覧情報をJSONで受け渡す
   def list
     # スクレイピング先のURL                                                     
