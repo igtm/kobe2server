@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
-  get 'event/list'
+  get 'event/mitsui_outlet'
 
+  get 'event/umie'
+
+  get 'event/premium_outlet'
+
+  get 'event/list'
   get 'event/show'
 
   # The priority is based upon order of creation: first created -> highest priority.
