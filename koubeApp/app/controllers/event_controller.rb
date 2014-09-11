@@ -4,14 +4,30 @@ class EventController < ApplicationController
   # /event/index
   # イベント一覧情報をJSONで受け渡す
   def list
-    test_url = "http://4804c19e.ngrok.com/umie.rb"
-    json_data = open(test_url).read    
+    # スクレイピング先のURL                                                     
+    url = 'http://umie.jp/news/event/'
+    charset = nil
+    html = open(url) do |f|
+      charset = f.charset # 文字種別を取得                                      
+      f.read # htmlを読み込んで変数htmlに渡す                                   
+    end
+    # htmlをパース(解析)してオブジェクトを生成                                  
+    doc = Nokogiri::HTML.parse(html, nil, charset)
+    events = []
+    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
+      # タイトルを表示                                                          
+      hash = {}
+      hash["title"] = node.css('h3').inner_text
+      hash["image"] = "http://umie.jp/" + node.css('img').attribute('src').value 
+      events.push(hash)
+    end
     response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
+    json_data = events.to_json
     callback_method = params[:callback]
     respond_to do |format|
       format.html
       format.json {  render :json => json_data,callback: callback_method}
-      end
+    end
   end
   # /event/show/11 
   def show
