@@ -14,11 +14,11 @@
 ActiveRecord::Schema.define(version: 20140912080802) do
 
   create_table "contents", force: true do |t|
-    t.string   "name"
+    t.string   "title"
     t.string   "category"
-    t.text     "description"
+    t.text     "content"
     t.integer  "favorite_count"
-    t.string   "img_url"
+    t.string   "image"
     t.string   "site_url"
     t.datetime "created_at"
     t.datetime "updated_at"

@@ -30,9 +30,9 @@
 | id         |  primary_key integer |  ID  例. 25  |
 | name       |  string |  お店・イベントの名前  |
 | category   |  string |  カテゴリ（santa/umie/mitsui/など）  |
-| description |  text |    説明文   |
+| content    |  text |    説明文   |
 | favorite_count |  integer |  お気に入り合計数     |
-| img_url   | string |   画像URL   例.http://umie/image/133.png |
+| image   | string |   画像URL   例.http://umie/image/133.png |
 | site_url  | string |  詳細サイトURL  例.http://umie/event/harabard |
   
 

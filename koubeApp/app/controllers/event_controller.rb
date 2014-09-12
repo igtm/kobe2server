@@ -2,7 +2,7 @@
 require "open-uri"
 class EventController < ApplicationController
 
-  # HTML解析に使うメソッド（getDoc, render_json）                                                       
+  # HTML解析に使うメソッド（getDoc, render_json）
   def getDoc(url)
     charset = nil
     html = open(url) do |f|
@@ -23,7 +23,6 @@ class EventController < ApplicationController
       format.json {  render :json => json_data,callback: callback_method}
     end
   end
-
 
   # /event/list.json
   # イベント一覧情報をJSONで受け渡す                                                                    
@@ -55,7 +54,7 @@ class EventController < ApplicationController
     end
   end
   
-  # /event/umie.json
+  # /event/sanda.json
   def sanda
     events = []
     sanda_scraping(events)
@@ -64,7 +63,7 @@ class EventController < ApplicationController
   def sanda_scraping(events)
     url = "http://www.premiumoutlets.co.jp"
     doc = getDoc( url + "/kobesanda/events/" )
-    # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html                                     
+    # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html
     doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
       hash = {}
       hash["outlet"] = "sanda"
@@ -103,6 +102,10 @@ class EventController < ApplicationController
     end
   end
   
+  # /event/db/update
+  def 
+    
+  end
   # /event/show/11                                               
   def show
   end

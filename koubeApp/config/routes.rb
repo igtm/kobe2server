@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'database/update'
+
   get 'event/umie'
   get 'event/mitsui'
   get 'event/sanda'
