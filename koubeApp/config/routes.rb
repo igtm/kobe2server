@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
-  get 'event/mitsui_outlet'
-
   get 'event/umie'
-
-  get 'event/premium_outlet'
+  get 'event/mitsui'
+  get 'event/sanda'
 
   get 'event/list'
   get 'event/show'

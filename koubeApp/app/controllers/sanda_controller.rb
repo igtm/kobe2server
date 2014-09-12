@@ -1,0 +1,2 @@
+class SandaController < ApplicationController
+end
