@@ -1,2 +1,0 @@
-class SandaController < ApplicationController
-end
