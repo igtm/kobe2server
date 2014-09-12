@@ -48,6 +48,7 @@ class EventController < ApplicationController
     doc.xpath('//div[@class="eventNewsBox"]').each do |node|
       # タイトルを表示                                                                                       
       hash = {}
+      hash["outlet"] = "umie"      
       hash["title"] = node.css('h3').inner_text
       hash["image"] = "http://umie.jp/" + node.css('img').attribute('src').value
       events.push(hash)
@@ -66,6 +67,7 @@ class EventController < ApplicationController
     # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html                                     
     doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
       hash = {}
+      hash["outlet"] = "sanda"
       hash["title"] = node.css('h4').inner_text
       img = node.css('.img_right').css('img')
       if img.blank? then
@@ -93,6 +95,7 @@ class EventController < ApplicationController
       doc = getDoc(url)
       doc.xpath('//div[@class="list_box"]').each do |node|
         hash = {}
+        hash["outlet"] = "mitsui"
         hash["title"] = node.css('h3').inner_text + " " + node.css(".shop_name").inner_text
         hash["image"] = "http://www.31op.com/kobe/news/" + node.css('img').attribute('src').value
         events.push(hash)
