@@ -25,39 +25,26 @@ class EventController < ApplicationController
   end
 
 
-  # /event/list                                                                                         
+  # /event/list.json
   # イベント一覧情報をJSONで受け渡す                                                                    
   def list
-    # スクレイピング先のURL                                    
-    url = 'http://umie.jp/news/event/'
-    charset = nil
-    html = open(url) do |f|
-      charset = f.charset # 文字種別を取得 
-      f.read # htmlを読み込んで変数htmlに渡す                                
-    end
-    # htmlをパース(解析)してオブジェクトを生成                                
-    doc = Nokogiri::HTML.parse(html, nil, charset)
-    events = []
-    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
-      # タイトルを表示                                                         
-      hash = {}
-      hash["title"] = node.css('h3').inner_text
-      hash["image"] = "http://umie.jp/" + node.css('img').attribute('src').value 
-      events.push(hash)
-    end
-    response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
-    json_data = events.to_json
-    callback_method = params[:callback]
-    respond_to do |format|
-      format.html
-      format.json {  render :json => json_data,callback: callback_method}
-    end
+    allEvents = []
+    umie_scraping(allEvents)
+    sanda_scraping(allEvents)
+    mitsui_scraping(allEvents)
+    # sort
+    allEvents = allEvents.sort_by{|hash| hash['title']}
+    render_json(allEvents.to_json)
   end
 
   # /event/umie.json
   def umie
-    doc = getDoc('http://umie.jp/news/event/')
     events = []
+    umie_scraping(events)
+    render_json(events.to_json)
+  end
+  def umie_scraping(events)
+    doc = getDoc('http://umie.jp/news/event/')
     doc.xpath('//div[@class="eventNewsBox"]').each do |node|
       # タイトルを表示                                                                                       
       hash = {}
@@ -65,12 +52,17 @@ class EventController < ApplicationController
       hash["image"] = "http://umie.jp/" + node.css('img').attribute('src').value
       events.push(hash)
     end
+  end
+  
+  # /event/umie.json
+  def sanda
+    events = []
+    sanda_scraping(events)
     render_json(events.to_json)
   end
-  def sanda
+  def sanda_scraping(events)
     url = "http://www.premiumoutlets.co.jp"
     doc = getDoc( url + "/kobesanda/events/" )
-    events = []
     # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html                                     
     doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
       hash = {}
@@ -84,25 +76,30 @@ class EventController < ApplicationController
       # hash["content"] = node.css('.det-txt').inner_text
       events.push(hash)
     end
+  end
+
+  # /event/mitsui.json
+  def mitsui
+    events = []
+    mitsui_scraping(events)
     render_json(events.to_json)
   end
-  def mitsui
+  def mitsui_scraping(events)
     open_url = "http://www.31op.com/kobe/news/open.html"
     shop_url = "http://www.31op.com/kobe/news/shop.html"
     event_url = "http://www.31op.com/kobe/news/event.html"
     urls = [open_url,shop_url,event_url]
-    allInfo = []
     urls.each do |url|
       doc = getDoc(url)
       doc.xpath('//div[@class="list_box"]').each do |node|
         hash = {}
         hash["title"] = node.css('h3').inner_text + " " + node.css(".shop_name").inner_text
         hash["image"] = "http://www.31op.com/kobe/news/" + node.css('img').attribute('src').value
-        allInfo.push(hash)
+        events.push(hash)
       end
     end
-    render_json(allInfo.to_json)
   end
+  
   # /event/show/11                                               
   def show
   end
