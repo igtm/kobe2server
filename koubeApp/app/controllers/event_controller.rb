@@ -1,28 +1,8 @@
 # -*- coding: utf-8 -*-                                                                                 
-require "open-uri"
+
 class EventController < ApplicationController
 
-  # HTML解析に使うメソッド（getDoc, render_json）
-  def getDoc(url)
-    charset = nil
-    html = open(url) do |f|
-      charset = f.charset # 文字種別を取得
-      f.read # htmlを読み込んで変数htmlに渡す                        
-    end
-    print "charset="+charset
-    if charset == "iso-8859-1" then charset="utf-8" end
-    # htmlをパース(解析)してオブジェクトを生成
-    doc = Nokogiri::HTML.parse(html, nil, charset)
-    return doc
-  end
-  def render_json(json_data)
-    response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
-    callback_method = params[:callback]
-    respond_to do |format|
-      format.html
-      format.json {  render :json => json_data,callback: callback_method}
-    end
-  end
+  # getDoc/render_jsonメソッドはApplicationControllerにある
 
   # /event/list.json
   # イベント一覧情報をJSONで受け渡す                                                                    
@@ -102,10 +82,6 @@ class EventController < ApplicationController
     end
   end
   
-  # /event/db/update
-  def 
-    
-  end
   # /event/show/11                                               
   def show
   end

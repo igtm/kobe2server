@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'shops/list'
+
+  get 'shops/near'
+
   get 'database/update'
 
   get 'event/umie'
