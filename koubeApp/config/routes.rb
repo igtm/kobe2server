@@ -1,18 +1,20 @@
 Rails.application.routes.draw do
+
   get 'shops/variety'
-
   get 'shops/list'
-
   get 'shops/near'
 
   get 'database/update'
 
+  get 'event/list'
   get 'event/umie'
   get 'event/mitsui'
   get 'event/sanda'
 
-  get 'event/list'
-  
+  match 'event/umie/:page',:to=>'event#umie',:via => [:get]
+  match 'event/mitsui/:page',:to=>'event#mitsui',:via => [:get]
+  match 'event/sanda/:page',:to=>'event#sanda',:via => [:get]
+  match 'event/list/:page',:to=>'event#list',:via => [:get]
   # http://www.rubylife.jp/rails/controller/index6.html#section4
   match 'event/show/:id',:to=>'event#show',:via => [:get]
   

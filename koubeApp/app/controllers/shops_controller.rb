@@ -7,7 +7,7 @@ class ShopsController <  BaseShopController
   	def list
   		yahooLocalSearch(34.694563,135.195247)
   	end
-
+  	
 	# 延原さん
 =begin
 	課題：
