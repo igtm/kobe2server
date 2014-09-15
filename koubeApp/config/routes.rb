@@ -10,8 +10,11 @@ Rails.application.routes.draw do
   get 'event/sanda'
 
   get 'event/list'
-  get 'event/show'
-
+  
+  # http://www.rubylife.jp/rails/controller/index6.html#section4
+  match 'event/show/:id',:to=>'event#show',:via => [:get]
+  
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

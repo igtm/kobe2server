@@ -6,8 +6,8 @@ class CreateContents < ActiveRecord::Migration
       t.text :content
       t.integer :favorite_count
       t.string :image
+      t.boolean :imageFlag
       t.string :site_url
-
       t.timestamps
     end
   end

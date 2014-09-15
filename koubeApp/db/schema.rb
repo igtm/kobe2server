@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20140912080802) do
     t.text     "content"
     t.integer  "favorite_count"
     t.string   "image"
+    t.boolean  "imageFlag"
     t.string   "site_url"
     t.datetime "created_at"
     t.datetime "updated_at"
