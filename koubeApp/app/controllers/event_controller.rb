@@ -43,8 +43,20 @@ class EventController < ApplicationController
 
   # /event/show/:id
   def show
-    id = param[:id]
-    detail_event = Content.find(id)
+    detail_event = []
+    id = params["id"]
+    Content.find(id){ |e|
+      hash = {
+        :id=>e.id,
+        :title=>e.title,
+        :image=>e.image,
+        :imageFlag=>e.imageFlag,
+        :category=>e.category,
+        :content=>e.content,
+        :site_url=>e.site_url
+      }
+      detail_event.push(hash)
+    }
     render_json(detail_event)
   end
 end

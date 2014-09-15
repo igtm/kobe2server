@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
   def getDoc(url)
     charset = nil
     html = open(url) do |f|
-      charset = f.charset # 文字種別を取得
+      charset = f.charsset # 文字種別を取得
       f.read # htmlを読み込んで変数htmlに渡す                        
     end
     print "charset="+charset
@@ -29,6 +29,7 @@ class ApplicationController < ActionController::Base
     doc = Nokogiri::HTML.parse(html, nil, charset)
     return doc
   end
+  
   def render_json(json_data)
     response.headers['Content-Type'] = 'application/javascript; charset=utf-8'
     callback_method = params[:callback]
