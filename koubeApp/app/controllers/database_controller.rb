@@ -1,6 +1,6 @@
 
 class DatabaseController < ApplicationController
-
+	
 	# /database/update
 	# DBの更新
 	def update

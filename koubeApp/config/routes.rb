@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'shops/variety'
+
   get 'shops/list'
 
   get 'shops/near'
