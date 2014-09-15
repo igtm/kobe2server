@@ -3,7 +3,7 @@
 require File.expand_path('../base_shop_controller.rb', __FILE__)
 
 class ShopsController <  BaseShopController
-	  
+	
   	def list
   		yahooLocalSearch(34.694563,135.195247)
   	end

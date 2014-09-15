@@ -16,9 +16,9 @@ class DatabaseController < ApplicationController
   	# イベント一覧情報をJSONで受け渡す
 	def list
 		allEvents = []
-	    umie_scraping(allEvents)
-	    sanda_scraping(allEvents)
-	    mitsui_scraping(allEvents)
+		umie_scraping(allEvents)
+		sanda_scraping(allEvents)
+		mitsui_scraping(allEvents)
 	    # sort
 	    allEvents = allEvents.sort_by{|hash| hash['title']}
 	    return allEvents
