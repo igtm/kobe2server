@@ -1,8 +1,14 @@
 class BaseShopController < ApplicationController
+
+	# @param: near/34-691279/135-183025/1
 	def near
-
+		currentLat = params[:latitude].gsub(/(-)/, ".").to_f
+		currentLon = params[:longitude].gsub(/(-)/, ".").to_f
+		page_num = params[:page].to_i
+		result = yahooLocalSearch(currentLat,currentLon,page_num)
+		render_json(result)
 	end
-
+	
 	# 只平さん担当
 =begin
 	課題：

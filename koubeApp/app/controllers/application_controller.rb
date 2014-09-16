@@ -16,12 +16,12 @@ class ApplicationController < ActionController::Base
     headers['Access-Control-Request-Method'] = '*'
   end
 
-   # HTML解析に使うメソッド（getDoc, render_json）
+  # HTML解析に使うメソッド（getDoc, render_json）
   def getDoc(url)
     charset = nil
     html = open(url) do |f|
-      charset = f.charsset # 文字種別を取得
-      f.read # htmlを読み込んで変数htmlに渡す                        
+      charset = f.charset # 文字種別を取得
+      f.read # htmlを読み込んで変数htmlに渡す                  
     end
     print "charset="+charset
     charset = "utf-8" if charset == "iso-8859-1"
@@ -56,17 +56,18 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    position = "&ac=281000&sort=rating"
+    position = "&ac=28100&sort=rating"
     position = "&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
     category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0209,0210006,0210009"
-    param = "&gc="+category+"&results=10&start="+(pageNum*10).to_s
+    param = "&gc="+category+"&results=10&start="+((pageNum-1)*10).to_s
     local_search_url = base_url + appid + position + param
 
     doc = getDoc(local_search_url)
 
     shops = []
+    print doc
     doc.xpath('//feature').each do |node|
-      hash = Hash.new
+      hash = {}
       hash["title"] = node.at("name").inner_text
       hash["category"] = node.at('category').inner_text
       lon_lat = node.at("coordinates").inner_text.split(",")
@@ -74,18 +75,29 @@ class ApplicationController < ActionController::Base
       hash["shoplat"] = lon_lat[1]
       hash["address"] = node.at("address").inner_text
       hash["tel"] = node.at("tel1").inner_text
-      hash["image"] = node.at("leadimage").inner_text
+
+      lead_image = node.at("leadimage")
+      hash["image"] = lead_image.inner_text unless lead_image.blank?
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
       hash["uid"] = node.at("uid").inner_text
-      hash["couponFlag"] = node.at("couponflag").inner_text
-      hash["url"] = node.at("smartphoneurl").inner_text
+
+      coupon_flag = node.at("couponflag")
+      coupon_flag = node.at("couponflag").inner_text if coupon_flag
+
+      hash["couponFlag"] = node.at("couponflag").inner_text unless coupon_flag.blank?
+      hash["coupon"] = node.at("coupon").inner_text unless coupon_flag.blank?
+      
+      url = node.at("smartphoneurl")
+      hash["url"] = url.inner_text if url
+      hash["urlFlag"] = false
+      hash["urlFlag"] = true unless hash["url"] == nil
+      
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
       #hash["reivew"] = getReview(hash["uid"]) if key == "review"
-      
       shops.push(hash)
     end
-    
+
     return shops
 
   end

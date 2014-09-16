@@ -4,8 +4,12 @@ require File.expand_path('../base_shop_controller.rb', __FILE__)
 
 class ShopsController <  BaseShopController
 	
+	# yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1)
   	def list
-  		yahooLocalSearch(34.694563,135.195247)
+  		page_num = params[:page]
+  		page_num = 1 if params[:page].blank?
+		result = yahooLocalSearch(nil,nil,page_num.to_i)
+		render_json(result)
   	end
   	
 	# 延原さん
