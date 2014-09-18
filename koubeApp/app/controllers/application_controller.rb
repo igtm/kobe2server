@@ -82,13 +82,16 @@ class ApplicationController < ActionController::Base
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
       hash["uid"] = node.at("uid").inner_text
-      
+
       coupon_flag = node.at("couponflag")
       coupon_flag = node.at("couponflag").inner_text if coupon_flag
-      hash["couponFlag"] = node.at("couponflag").inner_text unless coupon_flag.blank?
-      hash["coupon_url"] = node.at("coupon").at("pcurl").inner_text unless coupon_flag.blank?
-      mobile_url_flag = node.at("coupon").at("mobileflag").inner_text unless coupon_flag.blank?      
-      hash["coupon_url"] = node.at('coupon').at('mobileurl').inner_text unless mobile_url_flag.blank?
+      hash["couponFlag"] = false
+      hash["couponFlag"] = coupon_flag if coupon_flag
+      coupon = node.at("coupon")
+      hash["couponName"] = coupon.at("name").inner_text if coupon_flag
+      hash["couponUrl"] = coupon.at("pcurl").inner_text if coupon_flag
+      mobile_url_flag = coupon.at("mobileflag").inner_text if coupon_flag
+      hash["couponUrl"] = coupon.at('mobileurl').inner_text if mobile_url_flag
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
       #hash["reivew"] = getReview(hash["uid"]) if key == "review"
