@@ -53,6 +53,7 @@ class ApplicationController < ActionController::Base
     # 　二点間距離を取得
     # 各お店のuidでURLを用意
     # 　口コミを取得
+    # "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid=dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-&ac=28100&sort=rating"
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
@@ -81,17 +82,13 @@ class ApplicationController < ActionController::Base
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
       hash["uid"] = node.at("uid").inner_text
-
+      
       coupon_flag = node.at("couponflag")
       coupon_flag = node.at("couponflag").inner_text if coupon_flag
-
       hash["couponFlag"] = node.at("couponflag").inner_text unless coupon_flag.blank?
-      hash["coupon"] = node.at("coupon").inner_text unless coupon_flag.blank?
-      
-      url = node.at("smartphoneurl")
-      hash["url"] = url.inner_text if url
-      hash["urlFlag"] = false
-      hash["urlFlag"] = true unless hash["url"] == nil
+      hash["coupon_url"] = node.at("coupon").at("pcurl").inner_text unless coupon_flag.blank?
+      mobile_url_flag = node.at("coupon").at("mobileflag").inner_text unless coupon_flag.blank?      
+      hash["coupon_url"] = node.at('coupon').at('mobileurl').inner_text unless mobile_url_flag.blank?
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
       #hash["reivew"] = getReview(hash["uid"]) if key == "review"
