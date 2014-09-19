@@ -35,7 +35,8 @@ end
 url = 'http://zakka.30min.jp/hyogo/'
 i=1
 hash = Hash.new
-
+detail_event=[]
+ary=[]
     charset = nil
     html = open(url) do |f|
       charset = f.charset # 文字種別を取得
@@ -47,18 +48,31 @@ hash = Hash.new
     doc = Nokogiri::HTML.parse(html, nil, charset)
     doc.xpath('//div[@class="thumbnail304"]').each do |node|
    hash["id"]=i
-   hash["title"] = node.css('h2').inner_text #店名
-   hash["image"] = node.css('img').attribute('src').value #画像のURL
-   hash["content"] = node.xpath('//p[@class="guide_place_comment20"]').text #説明文
-   hash["URL"] = node.css('a').attribute('href').value#URL
+   #hash["title"] = node.css('h2').inner_text #店名
+   #hash["image"] = node.css('img').attribute('src').value #画像のURL
+   #hash["content"] = node.xpath('//p[@class="guide_place_comment20"]').text #説明文
+   #hash["URL"] = node.css('a').attribute('href').value#URL
+   ary=hash
+   detail_event << ary 
+   p ary
+   
+
 i=i+1
-
-p hash
-
 
 end
 
-#render_json(hash)
+p detail_event
+
+#render_json(detail_event)
+
+	#title:雑貨屋名（必須）  
+	#content:雑貨屋の説明文  
+	#image:画像のURL(絶対パス)  
+	#imageFlag:画像の有無（true or false）  
+	#site_url:雑貨屋サイトのURL（無ければ空文字を入れる
+
+
+
 
 	課題：
 	雑貨屋情報のサイトから，以下の情報を取り出してほしい
