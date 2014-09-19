@@ -11,6 +11,13 @@ class ShopsController <  BaseShopController
 		result = yahooLocalSearch(nil,nil,page_num.to_i)
 		render_json(result)
   	end
+
+  	# 詳細ページ.雑貨屋情報はどうしよう．
+  	def show
+  		uid = params[:uid]
+  		result = yahooLocalSearchDetail(uid)
+  		render_json(result)
+  	end
   	
 	# 延原さん
 =begin
@@ -44,7 +51,7 @@ class ShopsController <  BaseShopController
 =end
   	def variety
   		super  # 只平さんのコードがここで実行される
-
+  		
   		# here your code
   	end
 end

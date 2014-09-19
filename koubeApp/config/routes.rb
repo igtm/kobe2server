@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   match 'shops/list/:page',:to=>'shops#list',:via => [:get]
   
   get 'shops/variety'
+  
+  get 'shops/show'
+  match 'shops/show/:uid',:to=>'shops#show',:via => [:get]
 
   get 'database/update'
 
