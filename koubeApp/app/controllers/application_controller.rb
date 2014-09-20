@@ -206,13 +206,13 @@ class ApplicationController < ActionController::Base
     end
     return false
   end
-
+  
   # http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/distance.html
   # ２点間距離を取得
   # http://stackoverflow.com/questions/8709532/ruby-rails-bad-uri
-
+  
   def getDistance(currentlat,currentlon,shoplat,shoplon)
-
+    
     return false if currentlat == nil
 
     base_url = "http://distance.search.olp.yahooapis.jp/OpenLocalPlatform/V1/distance?appid="

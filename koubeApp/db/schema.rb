@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140912080802) do
+ActiveRecord::Schema.define(version: 20140920033703) do
 
   create_table "contents", force: true do |t|
     t.string   "title"
@@ -32,6 +32,22 @@ ActiveRecord::Schema.define(version: 20140912080802) do
     t.float    "current_lat"
     t.float    "current_lon"
     t.text     "favorite_ids"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "varieties", force: true do |t|
+    t.string   "title"
+    t.string   "category"
+    t.text     "content"
+    t.integer  "favorite_count"
+    t.boolean  "imageFlag"
+    t.string   "image"
+    t.string   "site_url"
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.float    "distance_km"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

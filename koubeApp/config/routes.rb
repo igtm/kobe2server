@@ -2,16 +2,18 @@ Rails.application.routes.draw do
 
   get 'shops/list'
   get 'shops/near'
+  
   match 'shops/near/:latitude/:longitude/:page',:to=>'shops#near',:via => [:get]
   match 'shops/list/:page',:to=>'shops#list',:via => [:get]
   
   get 'shops/variety'
+  match 'shops/variety/:page',:to=>'shops#variety',:via => [:get]
   
   get 'shops/show'
   match 'shops/show/:uid',:to=>'shops#show',:via => [:get]
 
   get 'database/update'
-
+  
   get 'event/list'
   get 'event/umie'
   get 'event/mitsui'

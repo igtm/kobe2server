@@ -50,7 +50,6 @@ class EventController < ApplicationController
   def show
     detail_event = []
     id = params["id"].to_i
-    print id
     aContent = Content.find(id)
     # http://d.hatena.ne.jp/favril/20100604/1275668631
     hash = aContent.attributes
