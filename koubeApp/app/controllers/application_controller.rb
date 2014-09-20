@@ -112,8 +112,11 @@ class ApplicationController < ActionController::Base
     shops = []
     doc.xpath('//feature').each do |node|
       hash = {}
+
+      # タイトル
       hash["title"] = node.at("name").inner_text
 
+      # カテゴリ
       category_detail = ""
       node.css("genre").each{|genre|
         category_detail += genre.css("name").inner_text
@@ -121,25 +124,40 @@ class ApplicationController < ActionController::Base
       }
       hash["categoryDetail"] = category_detail
       hash["category"] = getCategory(hash["categoryDetail"])
-      
+
+      # 位置情報と住所，電話番号
       lon_lat = node.at("coordinates").inner_text.split(",")
       hash["shoplon"] = lon_lat[0]
       hash["shoplat"] = lon_lat[1]
       hash["address"] = node.at("address").inner_text
       hash["tel"] = node.at("tel1").inner_text
       
-      node.at("station").each{ |station|
-        hash["staton_name"] = station.at("name")
-        hash["station_railway"] = station.at("railway")
-      }
+      # 駅
+      node.xpath('//station').each do |station|
+        station_name = station.at("name").inner_text
+        railway_name = station.at("railway").inner_text
+        hash["station_name"] = station_name + "駅"
+        hash["station_railway"] = railway_name
+      end
+      
+      # areaの取得がなぜか困難
+      node.xpath('//area').each do |test|
+        print test
+      end
+      
+      # 詳細説明 存在してること自体少ない
+      
 
+      # 画像
       lead_image = node.at("leadimage")
       hash["image"] = lead_image.inner_text unless lead_image.blank?
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
 
+      # 距離
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"]) if currentlat || currentlon
 
+      # クーポン
       coupon_flag = node.at("couponflag")
       coupon_flag = coupon_flag.inner_text if coupon_flag
       hash["couponFlag"] = false
