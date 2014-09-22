@@ -50,14 +50,12 @@ class EventController < ApplicationController
   
   # /event/show/:id
   def show
-    detail_event = []
     id = params["id"].to_i
     aContent = Content.find(id)
     # http://d.hatena.ne.jp/favril/20100604/1275668631
     hash = aContent.attributes
     hash["eventid"] = hash["id"]
-    detail_event.push(hash)
-    render_json(detail_event)
+    render_json(hash)
   end
 
   # def error_page(page_size,page_num)

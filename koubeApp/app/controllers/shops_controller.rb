@@ -36,14 +36,12 @@ class ShopsController <  BaseShopController
   
 	#個々の雑貨屋情報を表示
 	def variety_show
-		variety_detail = []
-		id = params[:id].to_i
-	    variety = Variety.find(id)
-	    # http://d.hatena.ne.jp/favril/20100604/1275668631
-	    hash = variety.attributes
-	    hash["varietyid"] = hash["id"]
-	    variety_detail.push(hash)
-	    render_json(variety_detail)
+    id = params[:id].to_i
+    variety = Variety.find(id)
+    # http://d.hatena.ne.jp/favril/20100604/1275668631
+    hash = variety.attributes
+    hash["varietyid"] = hash["id"]
+    render_json(hash)
 	end
 
 
