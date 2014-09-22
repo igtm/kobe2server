@@ -23,7 +23,7 @@ class ShopsController <  BaseShopController
   	
   	# 雑貨屋
   	def variety
-  		allVarieties = [] 
+  		allVarieties = []
     	page_num = params["page"] == nil ? 1 : params["page"].to_i # 3項演算子
     	page_size = 10
     	Variety.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
