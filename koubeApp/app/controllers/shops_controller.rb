@@ -8,8 +8,8 @@ class ShopsController <  BaseShopController
   	def list
   		page_num = params[:page]
   		page_num = 1 if params[:page].blank?
-		result = yahooLocalSearch(nil,nil,page_num.to_i,"all")
-		render_json(result)
+		  result = yahooLocalSearch(nil,nil,page_num.to_i,"all")
+		  render_json(result)
   	end
 
   	# お店の詳細ページ.
@@ -33,7 +33,7 @@ class ShopsController <  BaseShopController
 	    allVarieties.sort_by{|hash| hash['title']}
     	render_json(allVarieties)
 	end
-
+  
 	#個々の雑貨屋情報を表示
 	def variety_show
 		variety_detail = []

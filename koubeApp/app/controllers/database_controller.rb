@@ -16,6 +16,8 @@ class DatabaseController < ApplicationController
 			variety = Variety.new(hash)
 			variety.save unless Variety.exists?(title:hash["title"]) #一度保存したら新規保存しない
 		end
+		content = Content.all
+		render_json(content)
 	end
 
 	# 雑貨屋一覧情報をJSONで受け渡す
@@ -67,15 +69,38 @@ class DatabaseController < ApplicationController
 		umie_scraping(allEvents)
 		sanda_scraping(allEvents)
 		mitsui_scraping(allEvents)
+		feelkobe_scraping(allEvents)
 	    # sort
 	    allEvents = allEvents.sort_by{|hash| hash['title']}
 	    return allEvents
 	end
-	
+
+	def feelkobe_scraping(events)
+		doc = getDoc("http://www.feel-kobe.jp/event/")
+		doc.xpath('//div[@class="inner_box"]').each do |node|
+			hash = {}
+			hash["category"] = "Feelkobe"
+			hash["title"] = node.css("h6").inner_text
+			img = node.at("img")
+			unless img.blank?
+				img_url = img.attribute("src").value
+				hash["image"] = "http://www.feel-kobe.jp/" + img_url
+				hash["imageFlag"] = true
+			else
+				hash["image"] = ""
+				hash["imageFlag"] = false
+			end
+			content = node.css("p")[3]
+			hash["content"] = content.inner_text unless content.blank?
+			hash["site_url"] = "http://www.feel-kobe.jp/" + content.css("a").attribute("href").value unless content.blank?
+			events.push()
+		end
+	end
+	#イベント説明取得失敗
 	def umie_scraping(events)
 	    doc = getDoc('http://umie.jp/news/event/')
 	    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
-	    	# タイトルを表示                                                                                    
+	    	# タイトルを表示                                                                              
 	    	hash = {}
 	    	hash["category"] = "Umie"
 	    	hash["title"] = node.css('h3').inner_text
@@ -88,11 +113,15 @@ class DatabaseController < ApplicationController
 	        	hash["image"] = ""
 		        hash["imageFlag"] = false
 	     	end
-	      	events.push(hash)
+	     	hash["content"] = node.css(".commentBox").inner_text
+	     	link = node.css(".clearfix").css("a")
+	     	hash["site_url"] = "http://umie.jp" + link.attribute("href").value unless link.blank?
+	     	events.push(hash)
 	    end
 	end
-	
+
 	def sanda_scraping(events)
+		# http://www.premiumoutlets.co.jp/kobesanda/events/
 	    url = "http://www.premiumoutlets.co.jp"
 	    doc = getDoc( url + "/kobesanda/events/" )
 	    # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html
@@ -109,11 +138,12 @@ class DatabaseController < ApplicationController
 	        	hash["image"] = url + img.attribute('src').value
 	        	hash["imageFlag"] = true
 	      	end
-	      	# hash["content"] = node.css('.det-txt').inner_text
+	      	hash["content"] = node.css('.det-txt').css('p')[1].inner_text
+	      	hash["site_url"] = "http://www.premiumoutlets.co.jp/kobesanda/events/"
 	      	events.push(hash)
 	    end
 	end
-	
+	#イベント説明取得失敗
 	def mitsui_scraping(events)
 	    open_url = "http://www.31op.com/kobe/news/open.html"
 	    shop_url = "http://www.31op.com/kobe/news/shop.html"
@@ -133,6 +163,13 @@ class DatabaseController < ApplicationController
 		          	hash["image"] = ""
 		          	hash["imageFlag"] = false
 		        end
+		        detail = node.css(".detail_box").css("div")
+		        hash["content"] = detail.inner_text unless url == event_url && detail.blank?
+		        hash["content"] = detail[1].inner_text if url == event_url && !detail.blank?
+		        link = node.css(".shop_name").css("a")
+		        hash["site_url"] = false if link.blank?
+		        hash["site_url"] = "http://www.31op.com/kobe/news/" + link.attribute("href").value unless link.blank?
+		        
 		        events.push(hash)
 	      	end
 	    end

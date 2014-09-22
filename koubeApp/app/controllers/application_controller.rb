@@ -87,8 +87,14 @@ class ApplicationController < ActionController::Base
       hash["shoplat"] = lon_lat[1]
 
       lead_image = node.at("leadimage")
-      hash["image"] = lead_image.inner_text unless lead_image.blank?
-      hash["image"] += "jpg" unless hash["image"].include?("jpg") unless lead_image.blank?
+      unless lead_image.blank?
+        src = lead_image.inner_text 
+        # s = src.downcase
+        # unless s.include?(".jpg") || s.include?(".jpeg") || s.include?(".png") || s.include?(".gif")
+        #   src += "jpg"
+        # end
+        hash["image"] = src
+      end
 
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"].blank?
