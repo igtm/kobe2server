@@ -25,7 +25,7 @@ class DatabaseController < ApplicationController
 
 		return varieties
 	end
-
+	
 	def zakka30min(array)
 		urls = ['http://zakka.30min.jp/hyogo/1','http://zakka.30min.jp/hyogo/2']
 		urls.each do |url|
@@ -45,6 +45,7 @@ class DatabaseController < ApplicationController
 		   	end
 		end
 	end
+
 	#yahooさんのGEO_APIを利用
 	def geocodeing_api(hash,address)
 		base_url = "http://geo.search.olp.yahooapis.jp/OpenLocalPlatform/V1/geoCoder?appid="
@@ -76,7 +77,7 @@ class DatabaseController < ApplicationController
 	    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
 	    	# タイトルを表示                                                                                    
 	    	hash = {}
-	    	hash["category"] = "umie"
+	    	hash["category"] = "Umie"
 	    	hash["title"] = node.css('h3').inner_text
 	    	img = node.css('img')
 	    	unless img.blank?
@@ -97,7 +98,7 @@ class DatabaseController < ApplicationController
 	    # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html
 	    doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
 	    	hash = {}
-	    	hash["category"] = "sanda"
+	    	hash["category"] = "Sanda"
 	    	hash["title"] = node.css('h4').inner_text
 	    	img = node.css('.img_right').css('img')
 
@@ -122,7 +123,7 @@ class DatabaseController < ApplicationController
 	    	doc = getDoc(url)
 	    	doc.xpath('//div[@class="list_box"]').each do |node|
 	        	hash = {}
-	        	hash["category"] = "mitsui"
+	        	hash["category"] = "Mitsui"
 		        hash["title"] = node.css('h3').inner_text + " " + node.css(".shop_name").inner_text
 		        img = node.css('img')
 		        unless img.blank?
