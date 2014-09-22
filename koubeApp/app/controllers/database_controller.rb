@@ -81,7 +81,7 @@ class DatabaseController < ApplicationController
 			hash = {}
 			hash["category"] = "Feelkobe"
 			hash["title"] = node.css("h6").inner_text
-			img = node.at("img")
+			img = node.at(".border")
 			unless img.blank?
 				img_url = img.attribute("src").value
 				hash["image"] = "http://www.feel-kobe.jp" + img_url
