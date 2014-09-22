@@ -156,7 +156,6 @@ class ApplicationController < ActionController::Base
       # 画像
       lead_image = node.at("leadimage")
       hash["image"] = lead_image.inner_text unless lead_image.blank?
-      if
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
 
