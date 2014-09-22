@@ -81,15 +81,17 @@ class ApplicationController < ActionController::Base
       # category = RestaurantかClothingかVariety(雑貨屋)
       # Clothing 以外はレストラン．その他に雑貨屋情報を追加
       hash["category"] = getCategory(hash["categoryDetail"])
-
+      
       lon_lat = node.at("coordinates").inner_text.split(",")
       hash["shoplon"] = lon_lat[0]
       hash["shoplat"] = lon_lat[1]
 
       lead_image = node.at("leadimage")
       hash["image"] = lead_image.inner_text unless lead_image.blank?
+      hash["image"] += "jpg" unless hash["image"].include?("jpg") unless lead_image.blank?
+
       hash["imageFlag"] = true
-      hash["imageFlag"] = false if hash["image"] == ""
+      hash["imageFlag"] = false if hash["image"].blank?
       hash["uid"] = node.at("uid").inner_text
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
