@@ -92,8 +92,9 @@ class DatabaseController < ApplicationController
 			end
 			content = node.css("p")[3]
 			hash["content"] = content.inner_text unless content.blank?
-			hash["site_url"] = "http://www.feel-kobe.jp/" + content.css("a").attribute("href").value unless content.blank?
-			events.push()
+			hash["site_url"] = "http://www.feel-kobe.jp"
+			hash["site_url"] = "http://www.feel-kobe.jp" + content.css("a").attribute("href").value unless content.blank?
+			events.push(hash) unless hash["title"].blank?
 		end
 	end
 	#イベント説明取得失敗
@@ -167,7 +168,7 @@ class DatabaseController < ApplicationController
 		        hash["content"] = detail.inner_text unless url == event_url && detail.blank?
 		        hash["content"] = detail[1].inner_text if url == event_url && !detail.blank?
 		        link = node.css(".shop_name").css("a")
-		        hash["site_url"] = false if link.blank?
+		        hash["site_url"] = "http://www.31op.com/kobe/news/event.html" if link.blank?
 		        hash["site_url"] = "http://www.31op.com/kobe/news/" + link.attribute("href").value unless link.blank?
 		        
 		        events.push(hash)
