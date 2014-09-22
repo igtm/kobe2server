@@ -84,7 +84,7 @@ class DatabaseController < ApplicationController
 			img = node.at("img")
 			unless img.blank?
 				img_url = img.attribute("src").value
-				hash["image"] = "http://www.feel-kobe.jp/" + img_url
+				hash["image"] = "http://www.feel-kobe.jp" + img_url
 				hash["imageFlag"] = true
 			else
 				hash["image"] = ""

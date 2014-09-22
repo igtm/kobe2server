@@ -9,7 +9,7 @@ class EventController < ApplicationController
     allEvents = []
     page_num = params["page"] == nil ? 1 : params["page"].to_i
     page_size = 10
-
+    
     Content.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
       hash = {:eventid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
       allEvents.push(hash)
