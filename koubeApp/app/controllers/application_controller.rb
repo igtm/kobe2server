@@ -89,10 +89,7 @@ class ApplicationController < ActionController::Base
       lead_image = node.at("leadimage")
       unless lead_image.blank?
         src = lead_image.inner_text 
-        # s = src.downcase
-        # unless s.include?(".jpg") || s.include?(".jpeg") || s.include?(".png") || s.include?(".gif")
-        #   src += "jpg"
-        # end
+        src += "jpg" if src.index(".") == src.length
         hash["image"] = src
       end
 
@@ -159,6 +156,7 @@ class ApplicationController < ActionController::Base
       # 画像
       lead_image = node.at("leadimage")
       hash["image"] = lead_image.inner_text unless lead_image.blank?
+      if
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"] == ""
 
