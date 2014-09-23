@@ -46,9 +46,9 @@ class ApplicationController < ActionController::Base
     @param:現在地（latitude,longitude）& 
     @return:お店一覧
 =end
-  def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,category_type="all")
+  def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,category_type="all",results)
     # urlを用意（lat,lon,dist=18,）or 神戸検索
-    # 　Yahooにopen.readする（XML取得する） OK?
+    # 　Yahooにopen.readする（XML取得する）
     # 各お店の位置と現在地からURLを用意
     # 　二点間距離を取得
     # 各お店のuidでURLを用意
@@ -59,16 +59,19 @@ class ApplicationController < ActionController::Base
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     position = "&ac=28100&sort=rating"
     position = "&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
+
     gurume_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127"
     fashion_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0209016,0209018,0210006,0210009"
     category = gurume_category + "," + fashion_category if category_type == "all"
     category = gurume_category if category_type == "restaurant"
     category = fashion_category if category_type == "clothing"
-    param = "&gc="+category+"&results=10&start="+((pageNum-1)*10).to_s
+    
+    page_size = 7
+    param = "&gc="+category+"&results=10&start="+((pageNum-1)*page_size).to_s
     local_search_url = base_url + appid + position + param
-
+    
     doc = getDoc(local_search_url)
-    shops = []
+
     doc.xpath('//feature').each do |node|
       hash = {}
       hash["title"] = node.at("name").inner_text
@@ -89,7 +92,7 @@ class ApplicationController < ActionController::Base
       lead_image = node.at("leadimage")
       unless lead_image.blank?
         src = lead_image.inner_text 
-        src += "jpg" if src.index(".") == src.length
+        src += "jpg" if src.index(".") == src.length #例外
         hash["image"] = src
       end
 
@@ -99,9 +102,8 @@ class ApplicationController < ActionController::Base
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
 
-      shops.push(hash)
+      results.push(hash)
     end
-    return shops
   end
 
   def yahooLocalSearchDetail(uid,currentlat=nil,currentlon=nil)

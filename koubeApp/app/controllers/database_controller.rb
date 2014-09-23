@@ -41,7 +41,7 @@ class DatabaseController < ApplicationController
 		   		hash["content"] = node.xpath('//p[@class="guide_place_comment20"]').text #説明文
 		   		hash["address"] = node.xpath('//div[@class="photo_data"]').css("p").text.split("：")[1].split("/")[0] #住所
 		   		hash["site_url"] = "http://zakka.30min.jp" + node.css('a').attribute('href').value #URL
-		   		hash["category"] = "Variety"
+		   		hash["category"] = "雑貨屋"
 		   		geocodeing_api(hash,hash["address"]) unless hash["address"].blank?
 		   		array.push(hash)
 		   	end
