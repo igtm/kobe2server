@@ -79,7 +79,7 @@ class DatabaseController < ApplicationController
 		doc = getDoc("http://www.feel-kobe.jp/event/")
 		doc.xpath('//div[@class="inner_box"]').each do |node|
 			hash = {}
-			hash["category"] = "観光局情報"
+			hash["category"] = "Feelkobe"
 			hash["title"] = node.css("h6").inner_text
 			next if hash["title"].blank? 			
 
