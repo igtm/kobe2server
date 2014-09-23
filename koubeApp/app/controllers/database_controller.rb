@@ -121,7 +121,7 @@ class DatabaseController < ApplicationController
 			events.push(hash)
 		end
 	end
-	#イベント説明取得失敗
+	
 	def umie_scraping(events)
 	    doc = getDoc('http://umie.jp/news/event/')
 	    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
@@ -144,7 +144,7 @@ class DatabaseController < ApplicationController
 	     	events.push(hash)
 	    end
 	end
-
+	
 	def sanda_scraping(events)
 		# http://www.premiumoutlets.co.jp/kobesanda/events/
 	    url = "http://www.premiumoutlets.co.jp"
@@ -169,7 +169,7 @@ class DatabaseController < ApplicationController
 	      	events.push(hash)
 	    end
 	end
-
+	
 	def mitsui_scraping(events)
 	    open_url = "http://www.31op.com/kobe/news/open.html"
 	    shop_url = "http://www.31op.com/kobe/news/shop.html"

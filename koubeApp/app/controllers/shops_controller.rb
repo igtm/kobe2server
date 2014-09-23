@@ -43,32 +43,5 @@ class ShopsController <  BaseShopController
     hash["varietyid"] = hash["id"]
     render_json(hash)
 	end
-
-
-
-# 延原さんへのアドバイス！
-
-# 実はhash["id"] はなくても良かった
-
-# =begin =endの中はコメントアウト．その中にコードを書いても実行されない．
-# def variety の下に書いてほしかった．実は，here your codeって書いてあった．
-
-# インデントを正確にしましょう．単純に読みにくい．入れ子関係がわかりにくい
-# インデントはTabキーで作成します．
-
-# インデント良くない例：
-# if hash.blank?
-# next # インデントなし
-# end
-
-# インデント良い例：
-# if hash.blank?
-# 	next # インデントあり＝＞読みやすい
-# end
-
-# imageFlagが無かったよ．hash["imageFlag"]が欲しかった
-
-# 取得先のurlを二つにしました．
-
-
+  
 end

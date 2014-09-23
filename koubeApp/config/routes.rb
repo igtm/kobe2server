@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-
+  
+  get 'shops/variety_show'
+  match 'shops/variety_show/:id',:to=>'shops#variety_show',:via => [:get]
+  
   get 'shops/list'
   get 'shops/near'
   
