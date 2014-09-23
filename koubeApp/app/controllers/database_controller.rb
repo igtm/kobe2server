@@ -79,8 +79,10 @@ class DatabaseController < ApplicationController
 		doc = getDoc("http://www.feel-kobe.jp/event/")
 		doc.xpath('//div[@class="inner_box"]').each do |node|
 			hash = {}
-			hash["category"] = "Feelkobe"
+			hash["category"] = "観光局情報"
 			hash["title"] = node.css("h6").inner_text
+			next if hash["title"].blank? 			
+
 			img = node.at(".border")
 			unless img.blank?
 				img_url = img.attribute("src").value
@@ -90,18 +92,39 @@ class DatabaseController < ApplicationController
 				hash["image"] = ""
 				hash["imageFlag"] = false
 			end
-			content = node.css("p")[3]
+
+			content = node.css("p")[3]			
 			hash["content"] = content.inner_text unless content.blank?
-			hash["site_url"] = "http://www.feel-kobe.jp"
 			hash["site_url"] = "http://www.feel-kobe.jp" + content.css("a").attribute("href").value unless content.blank?
-			events.push(hash) unless hash["title"].blank?
+
+			# 続きはこちらの中の説明文を得る
+			detail_content = ""
+			readFlag = false
+			readCount = 0
+			detailDoc = getDoc(hash["site_url"]) 
+			detailDoc.xpath('//div[@class="inner_box"]').each do |detailNode|
+				next if readCount > 0
+				detailNode.css("p").each do |pnode|
+					# 説明文は<p></p>に囲まれている
+					# <p></p> <p>説明文</p><p>説明文</p> <p></p>
+					print "!!:#{readCount}:"+pnode.text
+					if pnode.text.blank?
+						readFlag = readFlag ? false : true
+						readCount += 1
+						next
+					end
+					detail_content += pnode.inner_text + "\n" if readFlag
+				end
+			end
+			hash["content"] = detail_content unless detail_content.blank?
+			stopword(hash["content"])
+			events.push(hash)
 		end
 	end
 	#イベント説明取得失敗
 	def umie_scraping(events)
 	    doc = getDoc('http://umie.jp/news/event/')
 	    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
-	    	# タイトルを表示                                                                              
 	    	hash = {}
 	    	hash["category"] = "Umie"
 	    	hash["title"] = node.css('h3').inner_text
@@ -115,6 +138,7 @@ class DatabaseController < ApplicationController
 		        hash["imageFlag"] = false
 	     	end
 	     	hash["content"] = node.css(".commentBox").inner_text
+	     	stopword(hash["content"])
 	     	link = node.css(".clearfix").css("a")
 	     	hash["site_url"] = "http://umie.jp" + link.attribute("href").value unless link.blank?
 	     	events.push(hash)
@@ -140,11 +164,12 @@ class DatabaseController < ApplicationController
 	        	hash["imageFlag"] = true
 	      	end
 	      	hash["content"] = node.css('.det-txt').css('p')[1].inner_text
+	      	stopword(hash["content"])
 	      	hash["site_url"] = "http://www.premiumoutlets.co.jp/kobesanda/events/"
 	      	events.push(hash)
 	    end
 	end
-	#イベント説明取得失敗
+
 	def mitsui_scraping(events)
 	    open_url = "http://www.31op.com/kobe/news/open.html"
 	    shop_url = "http://www.31op.com/kobe/news/shop.html"
@@ -165,8 +190,9 @@ class DatabaseController < ApplicationController
 		          	hash["imageFlag"] = false
 		        end
 		        detail = node.css(".detail_box").css("div")
-		        hash["content"] = detail.inner_text unless url == event_url && detail.blank?
-		        hash["content"] = detail[1].inner_text if url == event_url && !detail.blank?
+		        hash["content"] = detail[0].inner_text unless url == event_url && detail.blank?
+		        hash["content"] = detail[0].inner_text if url == event_url && !detail.blank?
+		        stopword(hash["content"]) unless detail.blank?
 		        link = node.css(".shop_name").css("a")
 		        hash["site_url"] = "http://www.31op.com/kobe/news/event.html" if link.blank?
 		        hash["site_url"] = "http://www.31op.com/kobe/news/" + link.attribute("href").value unless link.blank?
@@ -176,5 +202,15 @@ class DatabaseController < ApplicationController
 	    end
 	end
 
-
+	def stopword(content)
+		content.gsub!(/\r\n/,"\n")
+		content.gsub!(/\n\t\t|\n\t/,"\n")
+		content.gsub!(/\n\n\n|\n\n/,"\n")
+		content.gsub!(/\t\t\t|\t\t/,"\t")
+		content.gsub!(/続きはこちら/,"ここから消すんだ!")
+		content.gsub!(/続きを読む/,"!ここから消すんだ!")
+		start_ = content.index("!ここから消すんだ!")
+		_end =  content.length+1
+		content.slice!(start_.._end) if start_
+	end
 end
