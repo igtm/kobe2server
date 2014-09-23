@@ -67,7 +67,7 @@ class ApplicationController < ActionController::Base
     category = fashion_category if category_type == "clothing"
     
     page_size = 7
-    param = "&gc="+category+"&results=10&start="+((pageNum-1)*page_size).to_s
+    param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s
     local_search_url = base_url + appid + position + param
     
     doc = getDoc(local_search_url)
@@ -223,7 +223,7 @@ class ApplicationController < ActionController::Base
     return false if currentlat == nil
 
     base_url = "http://distance.search.olp.yahooapis.jp/OpenLocalPlatform/V1/distance?appid="
-    appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
+    appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-" # 新たなappid
     position = "&coordinates="+currentlon.to_s + "," + currentlat.to_s + "%20" + shoplon + "," + shoplat
     distance_url = base_url + appid + position
     
