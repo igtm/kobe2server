@@ -10,24 +10,25 @@ class DatabaseController < ApplicationController
 			content = Content.new(hash)
 			content.save unless Content.exists?(title:hash["title"]) #一度保存したら新規保存しない
 		end
-
-		allVarieties = varietyList()
-		allVarieties.each do |hash|
-			variety = Variety.new(hash)
-			variety.save unless Variety.exists?(title:hash["title"]) #一度保存したら新規保存しない
-		end
-		content = Content.all
+		content = Content.all # 試し表示
 		render_json(content)
 	end
 
-	# 雑貨屋一覧情報をJSONで受け渡す
-	def varietyList
-		varieties = []
-		zakka30min(varieties)
+	# /event/list.json
+  	# イベント一覧情報をJSONで受け渡す
+	def list
+		all = []
+		umie_scraping(all)
+		sanda_scraping(all)
+		mitsui_scraping(all)
+		feelkobe_scraping(all)
 
-		return varieties
+		zakka30min(all)
+	    # sort
+	    all = all.sort_by{|hash| hash['title']}
+	    return all
 	end
-	
+
 	def zakka30min(array)
 		urls = ['http://zakka.30min.jp/hyogo/1','http://zakka.30min.jp/hyogo/2']
 		urls.each do |url|
@@ -46,33 +47,6 @@ class DatabaseController < ApplicationController
 		   		array.push(hash)
 		   	end
 		end
-	end
-
-	#yahooさんのGEO_APIを利用
-	def geocodeing_api(hash,address)
-		base_url = "http://geo.search.olp.yahooapis.jp/OpenLocalPlatform/V1/geoCoder?appid="
-		appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
-		param = "&query="+URI.encode(address)+"&output=xml&ac=28100&al=4&recursive=true"
-		url = base_url + appid + param
-		doc = getDoc(url)
-		doc.xpath("//coordinates").each do |node|
-			lon_lat = node.inner_text.split(",")
-			hash["longitude"] = lon_lat[0]
-			hash["latitude"] = lon_lat[1]
-		end
-	end
-	
-	# /event/list.json
-  	# イベント一覧情報をJSONで受け渡す
-	def list
-		allEvents = []
-		umie_scraping(allEvents)
-		sanda_scraping(allEvents)
-		mitsui_scraping(allEvents)
-		feelkobe_scraping(allEvents)
-	    # sort
-	    allEvents = allEvents.sort_by{|hash| hash['title']}
-	    return allEvents
 	end
 
 	def feelkobe_scraping(events)
@@ -212,5 +186,20 @@ class DatabaseController < ApplicationController
 		start_ = content.index("!ここから消すんだ!")
 		_end =  content.length+1
 		content.slice!(start_.._end) if start_
+	end
+
+	#yahooさんのGEO_APIを利用
+	#現在は未使用
+	def geocodeing_api(hash,address)
+		base_url = "http://geo.search.olp.yahooapis.jp/OpenLocalPlatform/V1/geoCoder?appid="
+		appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
+		param = "&query="+URI.encode(address)+"&output=xml&ac=28100&al=4&recursive=true"
+		url = base_url + appid + param
+		doc = getDoc(url)
+		doc.xpath("//coordinates").each do |node|
+			lon_lat = node.inner_text.split(",")
+			hash["longitude"] = lon_lat[0]
+			hash["latitude"] = lon_lat[1]
+		end
 	end
 end

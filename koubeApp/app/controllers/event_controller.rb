@@ -9,8 +9,8 @@ class EventController < ApplicationController
     allEvents = []
     page_num = params["page"] == nil ? 1 : params["page"].to_i
     page_size = 10
-    
-    Content.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
+
+    Content.search_category("Umie Sanda Mitsui Feelkobe").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
       hash = {:eventid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
       allEvents.push(hash)
     }
@@ -22,7 +22,7 @@ class EventController < ApplicationController
     #10件ずつ表示
     page_size = 10
     events = []
-
+    
     Content.where("category == ?",place).limit(page_size).offset(page_size * (page_num-1)).map{ |record|
       hash = {:eventid => record.id, :title => record.title, :image => record.image, :imageFlag => record.imageFlag, :category => record.category}
       events.push(hash)
@@ -33,19 +33,19 @@ class EventController < ApplicationController
   # /event/umie.json
   def umie
     page_num = params["page"] == nil ? 1 : params["page"].to_i
-    outlet_event("umie",page_num)
+    outlet_event("Umie",page_num)
   end
   
   # /event/sanda.json
   def sanda
     page_num = params["page"] == nil ? 1 : params["page"].to_i
-    outlet_event("sanda",page_num)
+    outlet_event("Sanda",page_num)
   end
   
   # /event/mitsui.json
   def mitsui
     page_num = params["page"] == nil ? 1 : params["page"].to_i
-    outlet_event("mitsui",page_num)
+    outlet_event("Mitsui",page_num)
   end
   
   # /event/show/:id

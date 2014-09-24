@@ -8,6 +8,11 @@ class CreateContents < ActiveRecord::Migration
       t.string :image
       t.boolean :imageFlag
       t.string :site_url
+      
+      t.string :address
+      t.float :latitude
+      t.float :longitude
+      t.float :distance_km
       t.timestamps
     end
   end

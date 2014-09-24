@@ -21,6 +21,10 @@ ActiveRecord::Schema.define(version: 20140920033703) do
     t.string   "image"
     t.boolean  "imageFlag"
     t.string   "site_url"
+    t.string   "address"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.float    "distance_km"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

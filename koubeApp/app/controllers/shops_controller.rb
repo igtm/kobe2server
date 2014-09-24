@@ -25,13 +25,13 @@ class ShopsController <  BaseShopController
   		  render_json(result)
         return
       else
-        # DB 
-        variety = Variety.find(uid)
+        # DB
+        variety = Content.find(uid)
         # http://d.hatena.ne.jp/favril/20100604/1275668631
         hash = variety.attributes
         hash["uid"] = hash["id"]
         render_json(hash)
-      end        
+      end
   	end
 
     # レストラン情報のみ表示
@@ -39,10 +39,16 @@ class ShopsController <  BaseShopController
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
       yahooLocalSearch(nil,nil,page_num,"restaurant",results)
-
+      gurume_rank_scraping(results,page_num,3)
       render_json(results)
     end
 
+    # 食事オシャレお店のスクレイピング
+    def gurume_rank_scraping(array,page_num=1,page_size=3)
+      page_num = page_num.to_i
+      # ここでDBからゲットしてarrayにpushする
+
+    end
     # ファッションや洋服店の情報のみ表示
     def clothing
       page_num = params[:page].blank? ? 1 : params[:page].to_i
@@ -55,11 +61,11 @@ class ShopsController <  BaseShopController
     # 雑貨屋をスクレイピング
     def variety_scraping(array,_page_num=1,page_size=3)
       page_num = _page_num.to_i
-      Variety.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
+      Content.search_category("雑貨屋").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
         hash = {:uid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
         array.push(hash)
       }
-    end    
+    end
 
   	# 延原・只平さんが記述したコードはdatabase_controller.rbに移動しました
   	
@@ -68,10 +74,7 @@ class ShopsController <  BaseShopController
   		allVarieties = []
     	page_num = params["page"] == nil ? 1 : params["page"].to_i # 3項演算子
     	page_size = 10
-    	Variety.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
-	    	hash = {:varietyid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
-	    	allVarieties.push(hash)
-    	}
+      variety_scraping(allVarieties,page_num,page_size)
 	    allVarieties.sort_by{|hash| hash['title']}
     	render_json(allVarieties)
 	end
@@ -79,10 +82,10 @@ class ShopsController <  BaseShopController
 	#個々の雑貨屋情報を表示
 	def variety_show
     id = params[:id].to_i
-    variety = Variety.find(id)
+    variety = Content.find(id)
     # http://d.hatena.ne.jp/favril/20100604/1275668631
     hash = variety.attributes
-    hash["varietyid"] = hash["id"]
+    hash["uid"] = hash["id"]
     render_json(hash)
 	end
 
