@@ -7,8 +7,8 @@ class BaseShopController < ApplicationController
 		page_num = params[:page].to_i
 		results = []
 		yahooLocalSearch(currentLat,currentLon,page_num,"all",results)
-		
-		render_json(result)
+
+		render_json(results)
 	end
 	
 	def variety
