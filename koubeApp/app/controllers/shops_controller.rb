@@ -8,9 +8,8 @@ class ShopsController <  BaseShopController
   	def list
   	  page_num = params[:page]
   		page_num = 1 if params[:page].blank?
-
       results = []
-      variety_scraping(results,page_num.to_i) # +3shop
+      variety_scraping(results,page_num.to_i,3) # +3shop
 		  yahooLocalSearch(nil,nil,page_num.to_i,"all",results) #+7shop
       # 合計10ショップ
       
@@ -54,9 +53,8 @@ class ShopsController <  BaseShopController
     end
 
     # 雑貨屋をスクレイピング
-    def variety_scraping(array,_page_num)
-      page_num = _page_num == nil ? 1 : _page_num.to_i # 3項演算子
-      page_size = 3 # 残り7はYahooから
+    def variety_scraping(array,_page_num=1,page_size=3)
+      page_num = _page_num.to_i
       Variety.limit(page_size).offset(page_size * (page_num-1)).map { |e| 
         hash = {:uid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
         array.push(hash)

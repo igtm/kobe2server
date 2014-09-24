@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
     category = restaurant_category if category_type == "restaurant"
     category = clothing_category if category_type == "clothing"
     
-    page_size = 7
+    page_size = category_type == "all" ? 7 : 10
     param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s
     local_search_url = base_url + appid + position + param
     
