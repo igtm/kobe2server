@@ -47,14 +47,14 @@ class ShopsController <  BaseShopController
     def gurume_rank_scraping(array,page_num=1,page_size=3)
       page_num = page_num.to_i
       # ここでDBからゲットしてarrayにpushする
-
+      
     end
     # ファッションや洋服店の情報のみ表示
     def clothing
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
       yahooLocalSearch(nil,nil,page_num,"clothing",results)
-
+      
       render_json(results)
     end
 
@@ -66,7 +66,7 @@ class ShopsController <  BaseShopController
         array.push(hash)
       }
     end
-
+    
   	# 延原・只平さんが記述したコードはdatabase_controller.rbに移動しました
   	
   	# 雑貨屋

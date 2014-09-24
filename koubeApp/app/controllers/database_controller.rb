@@ -29,6 +29,22 @@ class DatabaseController < ApplicationController
 	    return all
 	end
 
+	def rankingshare(array)
+		url = "http://www.rankingshare.jp/list/%E7%A5%9E%E6%88%B8/?genre_id=3"
+		doc = getDoc(url)
+		doc.css(".search-list").xpath('//li').each do |li|
+			_url = li.at("a").attribute("href").value
+			_doc = getDoc(_url)
+			[2,3,4,5].each do |i|
+				node = _doc.css(".num-"+ i.to_s)
+				hash = Hash.new
+				hash["image"] = node.at(".rank-img").at("img").attribute("src").value
+				hash["imageFlag"] = hash["image"].blank? ? false : true
+				hash["title"] = node.at(".main-rank-description").inner_text
+			end
+		end
+	end
+
 	def zakka30min(array)
 		urls = ['http://zakka.30min.jp/hyogo/1','http://zakka.30min.jp/hyogo/2']
 		urls.each do |url|
