@@ -7,11 +7,6 @@ class BaseShopController < ApplicationController
 		page_num = params[:page].to_i
 		results = []
 		yahooLocalSearch(currentLat,currentLon,page_num,"all",results)
-		if results.blank?
-			hash = {:error_message=>"Error: user is not in Kobe"}
-			results.push(hash)
-			yahooLocalSearch(nil,nil,page_num,"all",results)
-		end
 		render_json(results)
 	end
 		

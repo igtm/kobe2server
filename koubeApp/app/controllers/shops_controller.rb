@@ -57,7 +57,7 @@ class ShopsController <  BaseShopController
       
       render_json(results)
     end
-
+    
     # 雑貨屋をスクレイピング
     def variety_scraping(array,_page_num=1,page_size=3)
       page_num = _page_num.to_i
