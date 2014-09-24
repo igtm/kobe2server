@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Request-Method'] = '*'
   end
-
+  
   # HTML解析に使うメソッド（getDoc, render_json）
   def getDoc(url)
     charset = nil
@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     position = "&ac=28100&sort=rating"
-    position = "&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
     # category
     restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
     clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0209018"
@@ -95,13 +95,13 @@ class ApplicationController < ActionController::Base
         src += "jpg" if src.index(".") == src.length #例外
         hash["image"] = src
       end
-
+      
       hash["imageFlag"] = true
       hash["imageFlag"] = false if hash["image"].blank?
       hash["uid"] = node.at("uid").inner_text
       
-      #hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
-
+      hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
+      
       results.push(hash)
     end
   end
@@ -240,7 +240,7 @@ class ApplicationController < ActionController::Base
   def getReview(uid)
     # http://api.olp.yahooapis.jp/v1/review/
     base_url = "http://api.olp.yahooapis.jp/v1/review/" + uid + "?appid="
-    appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
+    appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
     param = "&results=2&start=1"
     review_url = base_url + appid + param
 
@@ -253,6 +253,7 @@ class ApplicationController < ActionController::Base
       hash[:rate => node.at("rating").inner_text.to_i]
       reviews.push(hash)
     end
+    print reviews
     return reviews
   end
 

@@ -5,6 +5,7 @@ gem 'execjs'   # JSRuntimeがないよ対策
 gem 'therubyracer' # JSRuntimeがないよ対策
 gem 'nokogiri' # スクレイピングに使用
 gem 'parallel' # 並列処理に使用
+gem 'addressable',require: 'addressable/uri' # 日本語URIに使用
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.5'

@@ -1,4 +1,3 @@
-
 class DatabaseController < ApplicationController
 	
 	# /database/update
@@ -24,23 +23,30 @@ class DatabaseController < ApplicationController
 		feelkobe_scraping(all)
 
 		zakka30min(all)
+		rankingshare(all)
 	    # sort
 	    all = all.sort_by{|hash| hash['title']}
 	    return all
 	end
 
 	def rankingshare(array)
-		url = "http://www.rankingshare.jp/list/%E7%A5%9E%E6%88%B8/?genre_id=3"
+		url = "http://www.rankingshare.jp/tag/492497/"
 		doc = getDoc(url)
-		doc.css(".search-list").xpath('//li').each do |li|
-			_url = li.at("a").attribute("href").value
+		doc.css(".tag-list").css("li").each do |li|
+			_url = li.css("a").attribute("href").value
 			_doc = getDoc(_url)
-			[2,3,4,5].each do |i|
+			[2,3,4,5,6].each do |i|
 				node = _doc.css(".num-"+ i.to_s)
+				next if node.blank?
 				hash = Hash.new
-				hash["image"] = node.at(".rank-img").at("img").attribute("src").value
+				hash["image"] = node.css(".rank-img").css("img").attribute("src").value
 				hash["imageFlag"] = hash["image"].blank? ? false : true
-				hash["title"] = node.at(".main-rank-description").inner_text
+				hash["title"] = node.css("dt").css("a").inner_text
+				hash["content"] = node.css(".main-rank-description").inner_text
+				stopword(hash["content"])
+				hash["site_url"] = node.at(".num-item-link").at("a").attribute("href").value
+				hash["category"] = "restaurant"
+				array.push(hash)
 			end
 		end
 	end
@@ -205,7 +211,6 @@ class DatabaseController < ApplicationController
 	end
 
 	#yahooさんのGEO_APIを利用
-	#現在は未使用
 	def geocodeing_api(hash,address)
 		base_url = "http://geo.search.olp.yahooapis.jp/OpenLocalPlatform/V1/geoCoder?appid="
 		appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
