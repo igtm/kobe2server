@@ -93,9 +93,9 @@ class DatabaseController < ApplicationController
 				hash["imageFlag"] = false
 			end
 
-			content = node.css("p")[3]			
+			content = node.css("p")[3]
 			hash["content"] = content.inner_text unless content.blank?
-			hash["site_url"] = "http://www.feel-kobe.jp" + content.css("a").attribute("href").value unless content.blank?
+			hash["site_url"] = "http://www.feel-kobe.jp/sp" + content.css("a").attribute("href").value unless content.blank?
 
 			# 続きはこちらの中の説明文を得る
 			detail_content = ""
@@ -148,7 +148,7 @@ class DatabaseController < ApplicationController
 	def sanda_scraping(events)
 		# http://www.premiumoutlets.co.jp/kobesanda/events/
 	    url = "http://www.premiumoutlets.co.jp"
-	    doc = getDoc( url + "/kobesanda/events/" )
+	    doc = getDoc( url + "/kobesanda/events/")
 	    # refUrl: http://white.s151.xrea.com/blog/2008-02-11-10-36.html
 	    doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
 	    	hash = {}
