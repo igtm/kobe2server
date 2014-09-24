@@ -4,7 +4,7 @@ require File.expand_path('../base_shop_controller.rb', __FILE__)
 
 class ShopsController <  BaseShopController
 	
-	# yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1)
+	  # yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,category_type,results)
   	def list
   	  page_num = params[:page]
   		page_num = 1 if params[:page].blank?
@@ -17,7 +17,7 @@ class ShopsController <  BaseShopController
 		  render_json(results)
   	end
 
-  	# お店の詳細ページ.
+  	# お店の詳細ページ
   	def show
   	  uid = params[:uid] 
       if uid.to_i == 0 # 'jfla208402'.to_i = 0
@@ -34,6 +34,24 @@ class ShopsController <  BaseShopController
         render_json(hash)
       end        
   	end
+
+    # レストラン情報のみ表示
+    def restaurant
+      page_num = params[:page].blank? ? 1 : params[:page].to_i
+      results = []
+      yahooLocalSearch(nil,nil,page_num,"restaurant",results)
+
+      render_json(results)
+    end
+
+    # ファッションや洋服店の情報のみ表示
+    def clothing
+      page_num = params[:page].blank? ? 1 : params[:page].to_i
+      results = []
+      yahooLocalSearch(nil,nil,page_num,"clothing",results)
+
+      render_json(results)
+    end
 
     # 雑貨屋をスクレイピング
     def variety_scraping(array,_page_num)

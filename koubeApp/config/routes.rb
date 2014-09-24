@@ -1,5 +1,11 @@
 Rails.application.routes.draw do
   
+  get 'shops/clothing'
+  match 'shops/clothing/:page',:to=>'shops#clothing',:via => [:get]
+  
+  get 'shops/restaurant'
+  match 'shops/restaurant/:page',:to=>'shops#restaurant',:via => [:get]
+  
   get 'shops/variety_show'
   match 'shops/variety_show/:id',:to=>'shops#variety_show',:via => [:get]
   

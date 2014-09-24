@@ -59,12 +59,12 @@ class ApplicationController < ActionController::Base
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     position = "&ac=28100&sort=rating"
     position = "&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
-
-    gurume_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127"
-    fashion_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0209016,0209018,0210006,0210009"
-    category = gurume_category + "," + fashion_category if category_type == "all"
-    category = gurume_category if category_type == "restaurant"
-    category = fashion_category if category_type == "clothing"
+    # category
+    restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
+    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0209018"
+    category = restaurant_category + "," + clothing_category if category_type == "all"
+    category = restaurant_category if category_type == "restaurant"
+    category = clothing_category if category_type == "clothing"
     
     page_size = 7
     param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s
@@ -100,7 +100,7 @@ class ApplicationController < ActionController::Base
       hash["imageFlag"] = false if hash["image"].blank?
       hash["uid"] = node.at("uid").inner_text
       
-      hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
+      #hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
 
       results.push(hash)
     end
@@ -189,7 +189,7 @@ class ApplicationController < ActionController::Base
     end
     return shops
   end
-
+  # detail_category => categoryに変換
   def getCategory(detail_category)
     # http://category.search.olp.yahooapis.jp/OpenLocalPlatform/V1/genreCode?appid=dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-
     category = getAnCategory("0209","Clothing",detail_category)
