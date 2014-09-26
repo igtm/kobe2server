@@ -170,8 +170,7 @@ class ApplicationController < ActionController::Base
       hash["couponFlag"] = false
       hash["couponFlag"] = coupon_flag if coupon_flag
       unless hash["couponFlag"]
-        shops.push(hash)
-        next
+        return hash
       end
       coupon = node.search("coupon")
       coupon_name = coupon.at("name")
