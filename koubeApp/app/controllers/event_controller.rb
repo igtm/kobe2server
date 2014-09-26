@@ -11,7 +11,7 @@ class EventController < ApplicationController
     page_size = 10
     
     Content.search_category("Umie Sanda Mitsui Feelkobe").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
-      hash = {"eventid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category}
+      hash = {"eventid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category , "category_disp" => e.category_disp}
       allEvents.push(hash)
     }
     allEvents.sort_by{|hash| hash['title']}
