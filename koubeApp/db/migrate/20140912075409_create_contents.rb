@@ -3,6 +3,7 @@ class CreateContents < ActiveRecord::Migration
     create_table :contents do |t|
       t.string :title
       t.string :category
+      t.string :category_disp
       t.text :content
       t.integer :favorite_count
       t.string :image

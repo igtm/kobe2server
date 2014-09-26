@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(version: 20140920033703) do
   create_table "contents", force: true do |t|
     t.string   "title"
     t.string   "category"
+    t.string   "category_disp"
     t.text     "content"
     t.integer  "favorite_count"
     t.string   "image"
