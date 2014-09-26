@@ -15,7 +15,7 @@ class ApplicationController < ActionController::Base
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Request-Method'] = '*'
   end
-  
+
   # HTML解析に使うメソッド（getDoc, render_json）
   def getDoc(url)
     charset = nil
@@ -46,35 +46,32 @@ class ApplicationController < ActionController::Base
     @param:現在地（latitude,longitude）& 
     @return:お店一覧
 =end
-  def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,category_type="all",results)
-    # urlを用意（lat,lon,dist=18,）or 神戸検索
-    # 　Yahooにopen.readする（XML取得する）
-    # 各お店の位置と現在地からURLを用意
-    # 　二点間距離を取得
-    # 各お店のuidでURLを用意
-    # 　口コミを取得
-    # "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid=dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-&gc=0209&ac=28100"
+  def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,page_size=3,category_type,results)
+
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     position = "&ac=28100&sort=rating"
-    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=hybrid" if currentlat != nil && currentlon != nil
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=geo" if currentlat != nil && currentlon != nil
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=geo" if currentlat != nil && currentlon != nil && category_type.include?("50km")
+    
     # category
     restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
-    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0209018"
-    category = restaurant_category + "," + clothing_category if category_type == "all"
-    category = restaurant_category if category_type == "restaurant"
-    category = clothing_category if category_type == "clothing"
+    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014" 
     
-    page_size = category_type == "all" ? 7 : 10
-    param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s
-    local_search_url = base_url + appid + position + param
+    category = restaurant_category if category_type.include?("restaurant")
+    category = clothing_category if category_type.include?("clothing")
     
-    doc = getDoc(local_search_url)
+    #param
+    param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s+"&image=true"
 
+    local_search_url = base_url + appid + position + param
+    doc = getDoc(local_search_url)
     doc.xpath('//feature').each do |node|
       hash = {}
       hash["title"] = node.at("name").inner_text
+      next if hash["title"].blank?
+
       category_detail = ""
       node.css("genre").each{|genre|
         category_detail += genre.css("name").inner_text
@@ -88,7 +85,7 @@ class ApplicationController < ActionController::Base
       lon_lat = node.at("coordinates").inner_text.split(",")
       hash["shoplon"] = lon_lat[0]
       hash["shoplat"] = lon_lat[1]
-
+      
       lead_image = node.at("leadimage")
       unless lead_image.blank?
         src = lead_image.inner_text 
@@ -114,12 +111,12 @@ class ApplicationController < ActionController::Base
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     param = "&uid="+uid
     local_search_url = base_url + appid + param
-
+    
     doc = getDoc(local_search_url)
     shops = []
     doc.xpath('//feature').each do |node|
       hash = {}
-
+      
       # タイトル
       hash["title"] = node.at("name").inner_text
 
@@ -153,7 +150,6 @@ class ApplicationController < ActionController::Base
       end
       
       # 詳細説明 存在してること自体少ない
-      
 
       # 画像
       lead_image = node.at("leadimage")
@@ -184,7 +180,7 @@ class ApplicationController < ActionController::Base
       hash["couponUrl"] = coupon_mobileurl if mobile_url_flag
 
       hash["reivew"] = getReview(uid)
-
+      
       shops.push(hash)
     end
     return shops
@@ -248,13 +244,39 @@ class ApplicationController < ActionController::Base
     doc = getDoc(review_url)
     doc.xpath('//feature').each do |node|
       hash = Hash.new
-      hash[:subject => node.at("subject").inner_text]
-      hash[:body => node.at("comment").inner_text]
-      hash[:rate => node.at("rating").inner_text.to_i]
+      hash["subject"] = node.at("subject").inner_text
+      hash["body"] = node.at("comment").inner_text
+      rate = node.at("rating").inner_text
+      hash["rate"] = rate.to_i if rate
       reviews.push(hash)
     end
-    print reviews
     return reviews
+  end
+
+  # 異なるカテゴリのショップを交互に表示する
+  def sort_category(array,categories)
+    cate = categories
+    array_index = 0
+    cate_index = 0
+    sortArray = []
+    while array.length != 0
+      hash = array[array_index]
+      if hash.blank?
+        cate_index += 1
+        array_index = 0
+        next
+      end
+      print hash
+      if hash["category"]==cate[cate_index%cate.length]
+        sortArray.unshift(hash)
+        array.delete_at(array_index)
+        cate_index += 1
+        array_index = 0
+        print hash["category"]
+      end
+      array_index += 1
+    end
+    return sortArray.reverse
   end
 
 end

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-                                                                                 
+# -*- coding: utf-8 -*-                                               
 
-class EventController < ApplicationController 
+class EventController < ApplicationController
   # getDoc/render_jsonメソッドはApplicationControllerに記述
   # /event/list/2.json
   # イベント一覧情報をJSONで受け渡す
@@ -9,12 +9,13 @@ class EventController < ApplicationController
     allEvents = []
     page_num = params["page"] == nil ? 1 : params["page"].to_i
     page_size = 10
-
+    
     Content.search_category("Umie Sanda Mitsui Feelkobe").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
-      hash = {:eventid => e.id , :title => e.title, :image => e.image, :imageFlag => e.imageFlag, :category => e.category}
+      hash = {"eventid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category}
       allEvents.push(hash)
     }
     allEvents.sort_by{|hash| hash['title']}
+    allEvents = sort_category(allEvents,["Feelkobe","Umie","Sanda","Mitsui"])
     render_json(allEvents)
   end
 
@@ -22,9 +23,9 @@ class EventController < ApplicationController
     #10件ずつ表示
     page_size = 10
     events = []
-    
+
     Content.where("category == ?",place).limit(page_size).offset(page_size * (page_num-1)).map{ |record|
-      hash = {:eventid => record.id, :title => record.title, :image => record.image, :imageFlag => record.imageFlag, :category => record.category}
+      hash = {"eventid" => record.id, "title" => record.title, "image" => record.image, "imageFlag" => record.imageFlag, "category" => record.category}
       events.push(hash)
     }
     render_json(events)
