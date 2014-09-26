@@ -229,4 +229,10 @@ class DatabaseController < ApplicationController
 			hash["latitude"] = lon_lat[1]
 		end
 	end
+
+	def get_eventday(content)
+		# 正規表現で x月x日（x） or  y/y（y） を取得して，最後の日を開催終了日とする．その値を返す
+		# 
+	end
+
 end

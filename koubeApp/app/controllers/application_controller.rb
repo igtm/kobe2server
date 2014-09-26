@@ -116,13 +116,10 @@ class ApplicationController < ActionController::Base
     local_search_url = base_url + appid + param
     
     doc = getDoc(local_search_url)
-    shops = []
+    hash = {}
     doc.xpath('//feature').each do |node|
-      hash = {}
-      
       # タイトル
       hash["title"] = node.at("name").inner_text
-
       # カテゴリ
       category_detail = ""
       node.css("genre").each{|genre|
@@ -185,10 +182,8 @@ class ApplicationController < ActionController::Base
       hash["couponUrl"] = coupon_pcurl.text unless coupon_pcurl.blank?
       mobile_url_flag = coupon_mobileflag.text unless coupon_mobileflag.blank?
       hash["couponUrl"] = coupon_mobileurl.text if mobile_url_flag
-
-      shops.push(hash)
     end
-    return shops
+    return hash
   end
   # detail_category => categoryに変換
   def getCategory(detail_category)
