@@ -51,7 +51,7 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    position = "&ac=28100&sort=review"
+    position = "&ac=28100&sort=-rating"
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist" if currentlat != nil && currentlon != nil
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist" if currentlat != nil && currentlon != nil && category_type.include?("50km")
     print position
@@ -244,12 +244,13 @@ class ApplicationController < ActionController::Base
     doc.xpath('//feature').each do |node|
       hash = Hash.new
       hash["subject"] = node.css("subject").inner_text
-      hash["body"] = node.css("comment").inner_text
+      hash["body"] = node.css("comment").inner_text.split("\n")[2].strip!
       rate = node.css("rating").inner_text
       hash["rate"] = rate.to_i if rate
       reviews.push(hash)
     end
     return false if reviews.blank?
+    reviews = reviews.sort_by{|hash| -hash["rate"]}
     return reviews
   end
 

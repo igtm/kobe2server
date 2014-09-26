@@ -52,6 +52,8 @@ class DatabaseController < ApplicationController
 		end
 	end
 
+
+
 	def zakka30min(array)
 		urls = ['http://zakka.30min.jp/hyogo/1','http://zakka.30min.jp/hyogo/2']
 		urls.each do |url|
@@ -60,7 +62,7 @@ class DatabaseController < ApplicationController
 				hash = Hash.new
 			   	hash["title"] = node.css('h2').inner_text #店名
 			   	hash["imageFlag"] = false # 画像の有無
-			   	hash["imageFlag"] = true unless node.css('img').blank? 
+			   	hash["imageFlag"] = true unless node.css('img').blank?
 		   		hash["image"] = node.css('img').attribute('src').value if hash["imageFlag"] #画像のURL
 		   		hash["content"] = node.css('.guide_place_comment20').text #説明文
 		   		hash["address"] = node.css('.photo_data').css("p").text.split("：")[1].split("/")[0] #住所
@@ -232,7 +234,7 @@ class DatabaseController < ApplicationController
 
 	def get_eventday(content)
 		# 正規表現で x月x日（x） or  y/y（y） を取得して，最後の日を開催終了日とする．その値を返す
-		# 
+
 	end
 
 end
