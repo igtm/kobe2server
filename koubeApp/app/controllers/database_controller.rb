@@ -35,7 +35,7 @@ class DatabaseController < ApplicationController
 		doc.css(".tag-list").css("li").each do |li|
 			_url = li.css("a").attribute("href").value
 			_doc = getDoc(_url)
-			[2,3,4,5,6].each do |i|
+			[1,2,3,4,5].each do |i|
 				node = _doc.css(".num-"+ i.to_s)
 				next if node.blank?
 				hash = Hash.new
@@ -46,6 +46,7 @@ class DatabaseController < ApplicationController
 				stopword(hash["content"])
 				hash["site_url"] = node.at(".num-item-link").at("a").attribute("href").value
 				hash["category"] = "Restaurant"
+				hash["category_disp"] = "Restaurant"
 				array.push(hash)
 			end
 		end
@@ -61,10 +62,11 @@ class DatabaseController < ApplicationController
 			   	hash["imageFlag"] = false # 画像の有無
 			   	hash["imageFlag"] = true unless node.css('img').blank? 
 		   		hash["image"] = node.css('img').attribute('src').value if hash["imageFlag"] #画像のURL
-		   		hash["content"] = node.xpath('//p[@class="guide_place_comment20"]').text #説明文
-		   		hash["address"] = node.xpath('//div[@class="photo_data"]').css("p").text.split("：")[1].split("/")[0] #住所
+		   		hash["content"] = node.css('.guide_place_comment20').text #説明文
+		   		hash["address"] = node.css('.photo_data').css("p").text.split("：")[1].split("/")[0] #住所
 		   		hash["site_url"] = "http://zakka.30min.jp" + node.css('a').attribute('href').value #URL
 		   		hash["category"] = "Variety"
+		   		hash["category_disp"] = "雑貨屋"
 		   		geocodeing_api(hash,hash["address"]) unless hash["address"].blank?
 		   		array.push(hash)
 		   	end
@@ -76,6 +78,7 @@ class DatabaseController < ApplicationController
 		doc.xpath('//div[@class="inner_box"]').each do |node|
 			hash = {}
 			hash["category"] = "Feelkobe"
+			hash["category_disp"] = "Feelkobe"
 			hash["title"] = node.css("h6").inner_text
 			next if hash["title"].blank? 			
 
@@ -123,6 +126,7 @@ class DatabaseController < ApplicationController
 	    doc.xpath('//div[@class="eventNewsBox"]').each do |node|
 	    	hash = {}
 	    	hash["category"] = "Umie"
+	    	hash["category_disp"] = "Umie"
 	    	hash["title"] = node.css('h3').inner_text
 	    	img = node.css('img')
 	    	unless img.blank?
@@ -149,6 +153,7 @@ class DatabaseController < ApplicationController
 	    doc.xpath('//div[contains(concat(" ",normalize-space(@class)," "), " block ")]').each do |node|
 	    	hash = {}
 	    	hash["category"] = "Sanda"
+	    	hash["category_disp"] = "Sanda"
 	    	hash["title"] = node.css('h4').inner_text
 	    	img = node.css('.img_right').css('img')
 
@@ -176,6 +181,7 @@ class DatabaseController < ApplicationController
 	    	doc.xpath('//div[@class="list_box"]').each do |node|
 	        	hash = {}
 	        	hash["category"] = "Mitsui"
+	        	hash["category_disp"] = "Mitsui"
 		        hash["title"] = node.css('h3').inner_text + " " + node.css(".shop_name").inner_text
 		        img = node.css('img')
 		        unless img.blank?

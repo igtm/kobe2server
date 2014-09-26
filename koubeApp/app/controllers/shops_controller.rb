@@ -10,18 +10,19 @@ class ShopsController <  BaseShopController
       page_num = 1 if params[:page].blank?
       results = []
       # +3clothing +4restaurant
-      setKobeRestaurantClothing(nil,nil,page_num,results)
+      setKobeRestaurantClothing(nil,nil,page_num,"all",results)
       # +3shop
       variety_scraping(results,page_num.to_i,3)      
       # 合計10ショップ
       results = sort_category(results,["Variety","Restaurant","Clothing"])
       render_json(results)
     end
-
+    
     # お店の詳細ページ
     def show
       uid = params[:uid] 
-      if uid.to_i == 0 # 'jfla208402'.to_i = 0
+      uid_i = uid.to_i
+      if uid_i == 0 or uid.length > 15 # 'jfla208402'.to_i = 0
         # Yahoo
         result = yahooLocalSearchDetail(uid)
         render_json(result)
@@ -54,16 +55,16 @@ class ShopsController <  BaseShopController
         array.push(hash)
       }
     end
-
+    
     # ファッションや洋服店の情報のみ表示
     def clothing
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
       yahooLocalSearch(nil,nil,page_num,10,"clothing",results)
-
+      
       render_json(results)
     end
-
+    
     # 雑貨屋をスクレイピング
     def variety_scraping(array,_page_num=1,page_size=3)
       page_num = _page_num.to_i

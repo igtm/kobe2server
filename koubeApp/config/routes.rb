@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   get 'shops/list'
   get 'shops/near'
   
-  match 'shops/near/:latitude/:longitude/:page',:to=>'shops#near',:via => [:get]
+  match 'shops/near/:category/:latitude/:longitude/:page',:to=>'shops#near',:via => [:get]
   match 'shops/list/:page',:to=>'shops#list',:via => [:get]
   
   get 'shops/variety'

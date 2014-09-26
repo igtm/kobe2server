@@ -51,10 +51,10 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    position = "&ac=28100&sort=rating"
-    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=geo" if currentlat != nil && currentlon != nil
-    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=geo" if currentlat != nil && currentlon != nil && category_type.include?("50km")
-    
+    position = "&ac=28100&sort=review"
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist" if currentlat != nil && currentlon != nil
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist" if currentlat != nil && currentlon != nil && category_type.include?("50km")
+    print position
     # category
     restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
     clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014" 
@@ -63,6 +63,8 @@ class ApplicationController < ActionController::Base
     category = clothing_category if category_type.include?("clothing")
     
     #param
+    pageNum = pageNum.to_i
+    page_size = page_size.to_i
     param = "&gc="+category+"&results="+page_size.to_s+"&start="+((pageNum-1)*page_size).to_s+"&image=true"
 
     local_search_url = base_url + appid + position + param
@@ -81,6 +83,7 @@ class ApplicationController < ActionController::Base
       # category = RestaurantかClothingかVariety(雑貨屋)
       # Clothing 以外はレストラン．その他に雑貨屋情報を追加
       hash["category"] = getCategory(hash["categoryDetail"])
+      hash["category_disp"] = hash["category"]
       
       lon_lat = node.at("coordinates").inner_text.split(",")
       hash["shoplon"] = lon_lat[0]
@@ -128,6 +131,7 @@ class ApplicationController < ActionController::Base
       }
       hash["categoryDetail"] = category_detail
       hash["category"] = getCategory(hash["categoryDetail"])
+      hash["category_disp"] = hash["category"]
 
       # 位置情報と住所，電話番号
       lon_lat = node.at("coordinates").inner_text.split(",")
@@ -160,6 +164,9 @@ class ApplicationController < ActionController::Base
       # 距離
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"]) if currentlat || currentlon
 
+      # 評判
+      hash["reviews"] = getReview(uid)
+
       # クーポン
       coupon_flag = node.at("couponflag")
       coupon_flag = coupon_flag.inner_text if coupon_flag
@@ -169,18 +176,16 @@ class ApplicationController < ActionController::Base
         shops.push(hash)
         next
       end
-      coupon = node.at("coupon")
+      coupon = node.search("coupon")
       coupon_name = coupon.at("name")
-      coupon_pcurl = coupon.at("pocurl")
+      coupon_pcurl = coupon.at("pcurl")
       coupon_mobileflag = coupon.at("mobileflag")
       coupon_mobileurl = coupon.at('mobileurl')
-      hash["couponName"] = coupon_name unless coupon_name.blank?
-      hash["couponUrl"] = coupon_pcurl unless coupon_pcurl.blank?
-      mobile_url_flag = coupon_mobileflag unless coupon_mobileflag.blank?
-      hash["couponUrl"] = coupon_mobileurl if mobile_url_flag
+      hash["couponName"] = coupon_name.text unless coupon_name.blank?
+      hash["couponUrl"] = coupon_pcurl.text unless coupon_pcurl.blank?
+      mobile_url_flag = coupon_mobileflag.text unless coupon_mobileflag.blank?
+      hash["couponUrl"] = coupon_mobileurl.text if mobile_url_flag
 
-      hash["reivew"] = getReview(uid)
-      
       shops.push(hash)
     end
     return shops
@@ -237,19 +242,20 @@ class ApplicationController < ActionController::Base
     # http://api.olp.yahooapis.jp/v1/review/
     base_url = "http://api.olp.yahooapis.jp/v1/review/" + uid + "?appid="
     appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
-    param = "&results=2&start=1"
-    review_url = base_url + appid + param
+    review_url = base_url + appid
 
     reviews = []
     doc = getDoc(review_url)
+    print doc
     doc.xpath('//feature').each do |node|
       hash = Hash.new
-      hash["subject"] = node.at("subject").inner_text
-      hash["body"] = node.at("comment").inner_text
-      rate = node.at("rating").inner_text
+      hash["subject"] = node.css("subject").inner_text
+      hash["body"] = node.css("comment").inner_text
+      rate = node.css("rating").inner_text
       hash["rate"] = rate.to_i if rate
       reviews.push(hash)
     end
+    return false if reviews.blank?
     return reviews
   end
 
