@@ -118,6 +118,7 @@ class ApplicationController < ActionController::Base
     doc = getDoc(local_search_url)
     hash = {}
     doc.xpath('//feature').each do |node|
+      print node
       # タイトル
       hash["title"] = node.at("name").inner_text
       # カテゴリ
@@ -251,15 +252,15 @@ class ApplicationController < ActionController::Base
       hash["rate"] = rate.to_i if rate
       reviews.push(hash)
 
-      sum_rate += hash["rate"]
+      sum_rate += hash["rate"].to_i
       rate_count += 1
     end
     return false if reviews.blank?
 
-    if rate_count != 0
-      average = sum_rate / rate_count 
-      hash["rate_average"] = average.round(1) 
-    end
+    # if rate_count != 0
+    #   average = sum_rate / rate_count
+    #    = average.round(1) 
+    # end
     reviews = reviews.sort_by{|hash| -hash["rate"]}
     return reviews
   end
