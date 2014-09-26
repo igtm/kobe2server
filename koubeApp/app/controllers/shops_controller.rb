@@ -55,21 +55,21 @@ class ShopsController <  BaseShopController
         array.push(hash)
       }
     end
-    
+
     # ファッションや洋服店の情報のみ表示
     def clothing
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
       yahooLocalSearch(nil,nil,page_num,10,"clothing",results)
-      
+
       render_json(results)
     end
-    
+
     # 雑貨屋をスクレイピング
     def variety_scraping(array,_page_num=1,page_size=3)
       page_num = _page_num.to_i
       Content.search_category("Variety").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
-        hash = {"uid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category}
+        hash = {"uid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category,"category_disp" => e.category_disp}
         array.push(hash)
       }
     end

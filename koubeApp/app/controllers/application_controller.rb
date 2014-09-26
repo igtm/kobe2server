@@ -51,13 +51,12 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    position = "&ac=28100&sort=-rating"
-    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist" if currentlat != nil && currentlon != nil
-    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist" if currentlat != nil && currentlon != nil && category_type.include?("50km")
-    print position
+    position = "&ac=28100&sort=-rating&device=mobile" 
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist&device=mobile" if currentlat != nil && currentlon != nil
+    position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist&device=mobile" if currentlat != nil && currentlon != nil && category_type.include?("50km")
     # category
     restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
-    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014" 
+    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014"
     
     category = restaurant_category if category_type.include?("restaurant")
     category = clothing_category if category_type.include?("clothing")
@@ -101,6 +100,7 @@ class ApplicationController < ActionController::Base
       hash["uid"] = node.at("uid").inner_text
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
+      hash["rate"] = getRateOfShop(hash["uid"])
       
       results.push(hash)
     end
@@ -112,7 +112,7 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    param = "&uid="+uid
+    param = "&uid="+uid+"&detail=full"
     local_search_url = base_url + appid + param
     
     doc = getDoc(local_search_url)
@@ -238,9 +238,11 @@ class ApplicationController < ActionController::Base
     appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
     review_url = base_url + appid
 
+    sum_rate = 0
+    rate_count = 0
+
     reviews = []
     doc = getDoc(review_url)
-    print doc
     doc.xpath('//feature').each do |node|
       hash = Hash.new
       hash["subject"] = node.css("subject").inner_text
@@ -248,10 +250,34 @@ class ApplicationController < ActionController::Base
       rate = node.css("rating").inner_text
       hash["rate"] = rate.to_i if rate
       reviews.push(hash)
+
+      sum_rate += hash["rate"]
+      rate_count += 1
     end
     return false if reviews.blank?
+
+    if rate_count != 0
+      average = sum_rate / rate_count 
+      hash["rate_average"] = average.round(1) 
+    end
     reviews = reviews.sort_by{|hash| -hash["rate"]}
     return reviews
+  end
+
+  def getRateOfShop(uid)
+    base_url = "http://api.olp.yahooapis.jp/v1/review/" + uid + "?appid="
+    appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
+    review_url = base_url + appid
+    sum_rate = 0
+    rate_count = 0
+    doc = getDoc(review_url)
+    doc.xpath('//rating').each do |rate_node|
+      sum_rate += rate_node.inner_text.to_i
+      rate_count += 1
+    end
+    return false if rate_count == 0
+    averate = sum_rate / rate_count
+    return averate.round(1)
   end
 
   # 異なるカテゴリのショップを交互に表示する

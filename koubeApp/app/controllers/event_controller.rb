@@ -25,7 +25,7 @@ class EventController < ApplicationController
     events = []
 
     Content.where("category == ?",place).limit(page_size).offset(page_size * (page_num-1)).map{ |record|
-      hash = {"eventid" => record.id, "title" => record.title, "image" => record.image, "imageFlag" => record.imageFlag, "category" => record.category}
+      hash = {"eventid" => record.id, "title" => record.title, "image" => record.image, "imageFlag" => record.imageFlag, "category" => record.category,"category_disp" => record.category_disp}
       events.push(hash)
     }
     render_json(events)

@@ -68,7 +68,7 @@ class DatabaseController < ApplicationController
 		   		hash["address"] = node.css('.photo_data').css("p").text.split("：")[1].split("/")[0] #住所
 		   		hash["site_url"] = "http://zakka.30min.jp" + node.css('a').attribute('href').value #URL
 		   		hash["category"] = "Variety"
-		   		hash["category_disp"] = "雑貨屋"
+		   		hash["category_disp"] = "雑貨店"
 		   		geocodeing_api(hash,hash["address"]) unless hash["address"].blank?
 		   		array.push(hash)
 		   	end
@@ -80,7 +80,7 @@ class DatabaseController < ApplicationController
 		doc.xpath('//div[@class="inner_box"]').each do |node|
 			hash = {}
 			hash["category"] = "Feelkobe"
-			hash["category_disp"] = "Feelkobe"
+			hash["category_disp"] = "観光局情報"
 			hash["title"] = node.css("h6").inner_text
 			next if hash["title"].blank? 			
 
