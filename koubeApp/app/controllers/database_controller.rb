@@ -83,7 +83,7 @@ class DatabaseController < ApplicationController
 			hash["category_disp"] = "観光Info"
 			hash["title"] = node.css("h6").inner_text
 			next if hash["title"].blank?
-			
+
 			img = node.at(".border")
 			unless img.blank?
 				img_url = img.attribute("src").value
@@ -232,9 +232,17 @@ class DatabaseController < ApplicationController
 		end
 	end
 
+	# 年の切り替わりが面倒
+	# @param:content(string) fakflsa
+	# @retrun:day(string)  09,28
 	def get_eventday(content)
 		# 正規表現で x月x日（x） or  y/y（y） を取得して，最後の日を開催終了日とする．その値を返す
-
+		str = content
+		day = nil
+ 	  	day = str.match(/\d*\/\d*（?）/)
+   		day = str.match(/\d*月\d*日（?）/) if day == nil
+   		return nil if day == nil
+			
 	end
 
 end

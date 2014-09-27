@@ -53,7 +53,7 @@ class BaseShopController < ApplicationController
 		elsif category == "variety"
 		end
 	end
-
+	
 	# 50km県内のリストが欲しいとき:未テスト
 	def set50kmKobeInfo(currentlat,currentlon,pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
@@ -73,9 +73,8 @@ class BaseShopController < ApplicationController
 	def setKobeInfoList(pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
 			# all カテゴリ
-			# TODO:3->5 7->10
-			yahooLocalSearch(nil,nil,pageNum,5,"clothing_50km",results)
-	    	yahooLocalSearch(nil,nil,pageNum,10-results.length,"restaurant_50km",results)
+			yahooLocalSearch(nil,nil,pageNum,3,"clothing_50km",results)
+	    	yahooLocalSearch(nil,nil,pageNum,7-results.length,"restaurant_50km",results)
 	    elsif category == "restaurant"
 	    	yahooLocalSearch(nil,nil,pageNum,10,"restaurant_50km",results)
 	    elsif category == "clothing"
