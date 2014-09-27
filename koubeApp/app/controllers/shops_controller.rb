@@ -10,7 +10,7 @@ class ShopsController <  BaseShopController
       page_num = 1 if params[:page].blank?
       results = []
       # +3clothing +4restaurant
-      setKobeRestaurantClothing(nil,nil,page_num,"all",results)
+      setKobeInfoList(page_num,"all",results)
       # +3shop
       variety_scraping(results,page_num.to_i,3)
       # 合計10ショップ
