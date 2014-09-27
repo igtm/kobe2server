@@ -52,7 +52,7 @@ class ApplicationController < ActionController::Base
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
     position = "&ac=28100&sort=-rating&device=mobile"
-    position = "&ac=28100&sort=score&device=mobile" if category_type.include?("clothing")
+    # position = "&ac=28100&sort=score&device=mobile" if category_type.include?("clothing")
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist&device=mobile" if currentlat != nil && currentlon != nil
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist&device=mobile" if currentlat != nil && currentlon != nil && category_type.include?("50km")
     # category
@@ -112,15 +112,14 @@ class ApplicationController < ActionController::Base
     
     # "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid=dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-&uid=35f10a49835b51ba693970ac81f6d9b6211a2276
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
-    appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
+    appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    param = "&uid="+uid+"&detail=full"
+    param = "&uid="+uid
     local_search_url = base_url + appid + param
     
     doc = getDoc(local_search_url)
-
+    hash = Hash.new
     doc.xpath('//feature').each do |node|
-
       # タイトル
       hash["title"] = node.at("name").inner_text
       # カテゴリ
@@ -149,9 +148,7 @@ class ApplicationController < ActionController::Base
       end
       
       # areaの取得がなぜか困難
-      node.xpath('//area').each do |test|
-        print test
-      end
+
       
       # 詳細説明 存在してること自体少ない
 
@@ -201,7 +198,7 @@ class ApplicationController < ActionController::Base
 
   def getAnCategory(gcCode,expect_category,search_category)
     base_url = "http://category.search.olp.yahooapis.jp/OpenLocalPlatform/V1/genreCode?appid="
-    appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
+    appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-"
     param = "&gc="+gcCode
     category_url = base_url + appid + param
     doc = getDoc(category_url)
@@ -246,6 +243,8 @@ class ApplicationController < ActionController::Base
 
     reviews = []
     doc = getDoc(review_url)
+    print doc
+    print "\n\n"
     doc.xpath('//feature').each do |node|
       hash = Hash.new
       hash["subject"] = node.css("subject").inner_text
@@ -259,10 +258,6 @@ class ApplicationController < ActionController::Base
     end
     return nil if reviews.blank?
 
-    # if rate_count != 0
-    #   average = sum_rate / rate_count
-    #    = average.round(1) 
-    # end
     reviews = reviews.sort_by{|hash| -hash["rate"]}
     return reviews
   end
