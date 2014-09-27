@@ -47,7 +47,6 @@ class ApplicationController < ActionController::Base
     @return:お店一覧
 =end
   def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,page_size=3,category_type,results)
-
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
@@ -57,7 +56,7 @@ class ApplicationController < ActionController::Base
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist&device=mobile" if currentlat != nil && currentlon != nil && category_type.include?("50km")
     # category
     restaurant_category = "0102,0103,0104009,0105,0107002,0107004,0110005,0110006,0112,0113,0115,0116,0117,0118,0119,0122,0123003,0125,0127,0210006,0210009"
-    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014"
+    clothing_category = "0209001,0209002,0209003,0209005,0209006,0209008,0209009,0209010,0209011,0209012,0209013,0209014,0204003"
     
     category = restaurant_category if category_type.include?("restaurant")
     category = clothing_category if category_type.include?("clothing")
