@@ -306,19 +306,19 @@ class ApplicationController < ActionController::Base
       end
     end
     
-    for i in 0...sorted.length-1 do
+    for i in 0..sorted.length-1 do
       next if !sorted[i]["rate"]
-      for j in 0...sorted.length-1 do
+      for j in i..sorted.length-1 do
         next if !sorted[j]["rate"] || j == i
-        if sorted[i]["rate"].to_i > sorted[j]["rate"].to_i
+        if sorted[i]["rate"] > sorted[j]["rate"]
           tmp = sorted[i]
           sorted[i] = sorted[j]
           sorted[j] = tmp
         end
       end
     end
-    
-    return sorted
+
+    return sorted.reverse
   end
 
 end
