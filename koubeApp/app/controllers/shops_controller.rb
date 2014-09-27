@@ -12,7 +12,7 @@ class ShopsController <  BaseShopController
       # +3clothing +4restaurant
       setKobeRestaurantClothing(nil,nil,page_num,"all",results)
       # +3shop
-      variety_scraping(results,page_num.to_i,3)      
+      variety_scraping(results,page_num.to_i,3)
       # 合計10ショップ
       results = sort_category(results,["Variety","Restaurant","Clothing"])
       render_json(results)

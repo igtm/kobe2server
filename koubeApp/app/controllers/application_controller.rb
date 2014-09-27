@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     @return:お店一覧
 =end
   def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,page_size=3,category_type,results)
-
+    
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
@@ -280,7 +280,7 @@ class ApplicationController < ActionController::Base
     averate = sum_rate / rate_count
     return averate.round(1)
   end
-
+  
   # 異なるカテゴリのショップを交互に表示する
   def sort_category(array,categories)
     cate = categories

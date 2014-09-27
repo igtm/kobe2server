@@ -80,10 +80,10 @@ class DatabaseController < ApplicationController
 		doc.xpath('//div[@class="inner_box"]').each do |node|
 			hash = {}
 			hash["category"] = "Feelkobe"
-			hash["category_disp"] = "観光局情報"
+			hash["category_disp"] = "観光Info"
 			hash["title"] = node.css("h6").inner_text
-			next if hash["title"].blank? 			
-
+			next if hash["title"].blank?
+			
 			img = node.at(".border")
 			unless img.blank?
 				img_url = img.attribute("src").value

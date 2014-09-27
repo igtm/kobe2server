@@ -43,8 +43,9 @@ class BaseShopController < ApplicationController
 	def setKobeRestaurantClothing(currentlat,currentlon,pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
 			# all カテゴリ
-			yahooLocalSearch(currentlat,currentlon,pageNum,3,"clothing",results)
-	    	yahooLocalSearch(currentlat,currentlon,pageNum,7-results.length,"restaurant",results)
+			# TODO:3->5 7->10			
+			yahooLocalSearch(currentlat,currentlon,pageNum,5,"clothing",results)
+	    	yahooLocalSearch(currentlat,currentlon,pageNum,10-results.length,"restaurant",results)
 	    elsif category == "restaurant"
 	    	yahooLocalSearch(currentlat,currentlon,pageNum,10,"restaurant",results)
 	    elsif category == "clothing"
@@ -57,8 +58,9 @@ class BaseShopController < ApplicationController
 	def set50kmKobeInfo(currentlat,currentlon,pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
 			# all カテゴリ
-			yahooLocalSearch(currentlat,currentlon,pageNum,3,"clothing_50km",results)
-	    	yahooLocalSearch(currentlat,currentlon,pageNum,7-results.length,"restaurant_50km",results)
+			# TODO:3->5 7->10
+			yahooLocalSearch(currentlat,currentlon,pageNum,5,"clothing_50km",results)
+	    	yahooLocalSearch(currentlat,currentlon,pageNum,10-results.length,"restaurant_50km",results)
 	    elsif category == "restaurant"
 	    	yahooLocalSearch(currentlat,currentlon,pageNum,10,"restaurant_50km",results)
 	    elsif category == "clothing"
@@ -66,13 +68,14 @@ class BaseShopController < ApplicationController
 		elsif category == "variety"
 		end 
 	end
-	
+
 	# 普通にリストが欲しいとき
 	def setKobeInfoList(pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
 			# all カテゴリ
-			yahooLocalSearch(nil,nil,pageNum,3,"clothing_50km",results)
-	    	yahooLocalSearch(nil,nil,pageNum,7-results.length,"restaurant_50km",results)
+			# TODO:3->5 7->10
+			yahooLocalSearch(nil,nil,pageNum,5,"clothing_50km",results)
+	    	yahooLocalSearch(nil,nil,pageNum,10-results.length,"restaurant_50km",results)
 	    elsif category == "restaurant"
 	    	yahooLocalSearch(nil,nil,pageNum,10,"restaurant_50km",results)
 	    elsif category == "clothing"
