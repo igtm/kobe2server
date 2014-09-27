@@ -14,7 +14,7 @@ class ShopsController <  BaseShopController
       # +3shop
       variety_scraping(results,page_num.to_i,3)
       # 合計10ショップ
-      results = sort_category(results,["Restaurant","Clothing","Variety"])
+      results = sort_category_list(results,["Restaurant","Clothing","Variety"])
       render_json(results)
     end
     
@@ -43,6 +43,8 @@ class ShopsController <  BaseShopController
       results = []
       setKobeInfoList(page_num,"restaurant",results)
 #      gurume_rank_scraping(results,page_num,3)
+      results = exchange(results)
+      results = addRank(results) if page_num == 1 # 1~3位にランク付け 
       render_json(results)
     end
 

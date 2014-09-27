@@ -23,7 +23,7 @@ class ApplicationController < ActionController::Base
       charset = f.charset # 文字種別を取得
       f.read # htmlを読み込んで変数htmlに渡す                  
     end
-    print "charset="+charset
+    print url+"\n\n"
     charset = "utf-8" if charset == "iso-8859-1"
     # htmlをパース(解析)してオブジェクトを生成
     doc = Nokogiri::HTML.parse(html, nil, charset)
@@ -68,6 +68,7 @@ class ApplicationController < ActionController::Base
 
     local_search_url = base_url + appid + position + param
     doc = getDoc(local_search_url)
+    rank_count = 0
     doc.xpath('//feature').each do |node|
       hash = {}
       hash["title"] = node.at("name").inner_text
@@ -116,9 +117,9 @@ class ApplicationController < ActionController::Base
     local_search_url = base_url + appid + param
     
     doc = getDoc(local_search_url)
-    hash = {}
+
     doc.xpath('//feature').each do |node|
-      print node
+
       # タイトル
       hash["title"] = node.at("name").inner_text
       # カテゴリ
@@ -281,6 +282,12 @@ class ApplicationController < ActionController::Base
     return averate.round(1)
   end
 
+
+  def sort_category_list(array,categories)
+    sorted = sort_category(array,categories)
+    return exchange(sorted)
+  end
+
   # 異なるカテゴリのショップを交互に表示する
   def sort_category(array,categories)
     #1.レート高い順でソート
@@ -305,6 +312,10 @@ class ApplicationController < ActionController::Base
         arrayIndex = 0
       end
     end
+    return sorted
+  end
+
+  def exchange(sorted)
     # 4,5,4
     max = nil
     max_i=0
@@ -314,7 +325,7 @@ class ApplicationController < ActionController::Base
       next if !sorted[i]["rate"]
       max = sorted[i] if max == nil
       min = sorted[i] if min == nil
-      
+
       if max["rate"] < sorted[i]["rate"]
         max = sorted[i]
         max_i = i
@@ -327,7 +338,16 @@ class ApplicationController < ActionController::Base
     temp = sorted[min_i]
     sorted[min_i] = sorted[max_i]
     sorted[max_i] = temp
-    return sorted
+    return sorted    
+  end
+  # 1~3にランクを付ける
+  def addRank(results)
+    count = 0
+    results.each do |hash|  
+      count += 1
+      hash["rank"] = count if count <= 3
+    end
+    return results
   end
 
 end

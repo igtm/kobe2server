@@ -6,7 +6,7 @@ class BaseShopController < ApplicationController
 		currentlat = params[:latitude].gsub(/(-)/, ".").to_f
 		currentlon = params[:longitude].gsub(/(-)/, ".").to_f
 		page_num = params[:page].to_i
-
+		
 		results = []
 		return results unless category or currentlat or currentlon 
 		
@@ -68,7 +68,7 @@ class BaseShopController < ApplicationController
 		elsif category == "variety"
 		end 
 	end
-
+	
 	# 普通にリストが欲しいとき
 	def setKobeInfoList(pageNum,category,results)
 		if category != "restaurant" && category != "clothing" && category != "variety"
