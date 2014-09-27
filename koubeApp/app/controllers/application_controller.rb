@@ -47,7 +47,7 @@ class ApplicationController < ActionController::Base
     @return:お店一覧
 =end
   def yahooLocalSearch(currentlat=nil,currentlon=nil,pageNum=1,page_size=3,category_type,results)
-    
+
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
@@ -283,28 +283,42 @@ class ApplicationController < ActionController::Base
 
   # 異なるカテゴリのショップを交互に表示する
   def sort_category(array,categories)
-    cate = categories
-    array_index = 0
-    cate_index = 0
-    sortArray = []
+    #1.レート高い順でソート
+    #2.カテゴリを交互にarrayに格納
+    cates = categories
+    catesIndex = 0
+    arrayIndex = 0
+    sorted = []
+
     while array.length != 0
-      hash = array[array_index]
-      if hash.blank?
-        cate_index += 1
-        array_index = 0
-        next
+      hash = array[arrayIndex]
+      #カテゴリ==hash["category"]なら格納.異なれば次のを確認
+      if cates[catesIndex%cates.length] == hash["category"]
+        catesIndex += 1
+        sorted.push(array[arrayIndex])
+        array.delete_at(arrayIndex)
+      else
+        arrayIndex += 1
       end
-      print hash
-      if hash["category"]==cate[cate_index%cate.length]
-        sortArray.unshift(hash)
-        array.delete_at(array_index)
-        cate_index += 1
-        array_index = 0
-        print hash["category"]
+      if arrayIndex >= array.length
+        catesIndex += 1
+        arrayIndex = 0
       end
-      array_index += 1
     end
-    return sortArray.reverse
+    
+    for i in 0...sorted.length-1 do
+      next if !sorted[i]["rate"]
+      for j in 0...sorted.length-1 do
+        next if !sorted[j]["rate"] || j == i
+        if sorted[i]["rate"].to_i > sorted[j]["rate"].to_i
+          tmp = sorted[i]
+          sorted[i] = sorted[j]
+          sorted[j] = tmp
+        end
+      end
+    end
+    
+    return sorted
   end
 
 end

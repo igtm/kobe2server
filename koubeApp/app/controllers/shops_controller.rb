@@ -14,7 +14,7 @@ class ShopsController <  BaseShopController
       # +3shop
       variety_scraping(results,page_num.to_i,3)
       # 合計10ショップ
-      results = sort_category(results,["Variety","Restaurant","Clothing"])
+      results = sort_category(results,["Restaurant","Clothing","Variety"])
       render_json(results)
     end
     
@@ -36,7 +36,7 @@ class ShopsController <  BaseShopController
         render_json(hash)
       end
     end
-    
+
     # レストラン情報のみ表示
     def restaurant
       page_num = params[:page].blank? ? 1 : params[:page].to_i
