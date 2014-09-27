@@ -305,20 +305,29 @@ class ApplicationController < ActionController::Base
         arrayIndex = 0
       end
     end
-    
+    # 4,5,4
+    max = nil
+    max_i=0
+    min = nil
+    min_i=0
     for i in 0..sorted.length-1 do
       next if !sorted[i]["rate"]
-      for j in i..sorted.length-1 do
-        next if !sorted[j]["rate"] || j == i
-        if sorted[i]["rate"] > sorted[j]["rate"]
-          tmp = sorted[i]
-          sorted[i] = sorted[j]
-          sorted[j] = tmp
-        end
+      max = sorted[i] if max == nil
+      min = sorted[i] if min == nil
+      
+      if max["rate"] < sorted[i]["rate"]
+        max = sorted[i]
+        max_i = i
+      end
+      if min["rate"] > sorted[i]["rate"]
+        min = sorted[i] 
+        min_i = i
       end
     end
-
-    return sorted.reverse
+    temp = sorted[min_i]
+    sorted[min_i] = sorted[max_i]
+    sorted[max_i] = temp
+    return sorted
   end
 
 end
