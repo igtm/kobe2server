@@ -28,28 +28,29 @@ class DatabaseController < ApplicationController
 	    all = all.sort_by{|hash| hash['title']}
 	    return all
 	end
-
+	
+	#TODO:画像がロードになる．理由:スクロールによって画像がロードになる．
 	def rankingshare(array)
-		url = "http://www.rankingshare.jp/tag/492497/"
-		doc = getDoc(url)
-		doc.css(".tag-list").css("li").each do |li|
-			_url = li.css("a").attribute("href").value
-			_doc = getDoc(_url)
-			[1,2,3,4,5].each do |i|
-				node = _doc.css(".num-"+ i.to_s)
-				next if node.blank?
-				hash = Hash.new
-				hash["image"] = node.css(".rank-img").css("img").attribute("src").value
-				hash["imageFlag"] = hash["image"].blank? ? false : true
-				hash["title"] = node.css("dt").css("a").inner_text
-				hash["content"] = node.css(".main-rank-description").inner_text
-				stopword(hash["content"])
-				hash["site_url"] = node.at(".num-item-link").at("a").attribute("href").value
-				hash["category"] = "Restaurant"
-				hash["category_disp"] = "Restaurant"
-				array.push(hash)
-			end
-		end
+		# url = "http://www.rankingshare.jp/tag/492497/"
+		# doc = getDoc(url)
+		# doc.css(".tag-list").css("li").each do |li|
+		# 	_url = li.css("a").attribute("href").value
+		# 	_doc = getDoc(_url)
+		# 	[1,2,3,4,5].each do |i|
+		# 		node = _doc.css(".num-"+ i.to_s)
+		# 		next if node.blank?
+		# 		hash = Hash.new
+		# 		hash["image"] = node.css(".rank-img").css("img").attribute("src").value
+		# 		hash["imageFlag"] = hash["image"].blank? ? false : true
+		# 		hash["title"] = node.css("dt").css("a").inner_text
+		# 		hash["content"] = node.css(".main-rank-description").inner_text
+		# 		stopword(hash["content"])
+		# 		hash["site_url"] = node.at(".num-item-link").at("a").attribute("href").value
+		# 		hash["category"] = "Restaurant"
+		# 		hash["category_disp"] = "Restaurant"
+		# 		array.push(hash)
+		# 	end
+		# end
 	end
 
 

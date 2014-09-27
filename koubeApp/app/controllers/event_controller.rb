@@ -18,7 +18,7 @@ class EventController < ApplicationController
     allEvents = sort_category(allEvents,["Feelkobe","Umie","Sanda","Mitsui"])
     render_json(allEvents)
   end
-
+  
   def outlet_event(place,page_num)
     #10件ずつ表示
     page_size = 10

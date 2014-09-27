@@ -36,24 +36,24 @@ class ShopsController <  BaseShopController
         render_json(hash)
       end
     end
-
+    
     # レストラン情報のみ表示
     def restaurant
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
-      yahooLocalSearch(nil,nil,page_num,7,"restaurant",results)
-      gurume_rank_scraping(results,page_num,3)
+      setKobeInfoList(page_num,"restaurant",results)
+#      gurume_rank_scraping(results,page_num,3)
       render_json(results)
     end
 
     # 食事オシャレお店のスクレイピング
     def gurume_rank_scraping(array,page_num=1,page_size=3)
-      page_num = page_num.to_i
-      # ここでDBからゲットしてarrayにpushする
-      Content.search_category("Restaurant").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
-        hash = {"uid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category}
-        array.push(hash)
-      }
+      # page_num = page_num.to_i
+      # # ここでDBからゲットしてarrayにpushする
+      # Content.search_category("Restaurant").limit(page_size).offset(page_size * (page_num-1)).map { |e| 
+      #   hash = {"uid" => e.id , "title" => e.title, "image" => e.image, "imageFlag" => e.imageFlag, "category" => e.category}
+      #   array.push(hash)
+      # }
     end
 
     # ファッションや洋服店の情報のみ表示

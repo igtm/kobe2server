@@ -280,7 +280,7 @@ class ApplicationController < ActionController::Base
     averate = sum_rate / rate_count
     return averate.round(1)
   end
-  
+
   # 異なるカテゴリのショップを交互に表示する
   def sort_category(array,categories)
     cate = categories
