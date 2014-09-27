@@ -51,7 +51,8 @@ class ApplicationController < ActionController::Base
     base_url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch?appid="
     appid = "dj0zaiZpPVk0S2lzOW1kZG1ZTiZzPWNvbnN1bWVyc2VjcmV0Jng9YTQ-"
     # http://www13.plala.or.jp/bigdata/municipal_code_2.html
-    position = "&ac=28100&sort=-rating&device=mobile" 
+    position = "&ac=28100&sort=-rating&device=mobile"
+    position = "&ac=28100&sort=score&device=mobile" if category_type.include?("clothing")
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=3&sort=dist&device=mobile" if currentlat != nil && currentlon != nil
     position = "&ac=28100&lat="+currentlat.to_s+"&lon="+currentlon.to_s+"&dist=50&sort=dist&device=mobile" if currentlat != nil && currentlon != nil && category_type.include?("50km")
     # category
@@ -68,7 +69,7 @@ class ApplicationController < ActionController::Base
 
     local_search_url = base_url + appid + position + param
     doc = getDoc(local_search_url)
-    rank_count = 0
+
     doc.xpath('//feature').each do |node|
       hash = {}
       hash["title"] = node.at("name").inner_text
@@ -101,7 +102,7 @@ class ApplicationController < ActionController::Base
       hash["uid"] = node.at("uid").inner_text
       
       hash["distance_km"] = getDistance(currentlat,currentlon,hash["shoplat"],hash["shoplon"])
-      hash["rate"] = getRateOfShop(hash["uid"])
+      hash["rate"] = getRateOfShop(hash["uid"]) if category_type.include?("restaurant")
       
       results.push(hash)
     end
@@ -208,7 +209,7 @@ class ApplicationController < ActionController::Base
       category_name = node.css("name").inner_text
       return expect_category if search_category.include?(category_name)
     end
-    return false
+    return nil
   end
   
   # http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/distance.html
@@ -217,7 +218,7 @@ class ApplicationController < ActionController::Base
   
   def getDistance(currentlat,currentlon,shoplat,shoplon)
     
-    return false if currentlat == nil
+    return nil if currentlat == nil || currentlon == nil
 
     base_url = "http://distance.search.olp.yahooapis.jp/OpenLocalPlatform/V1/distance?appid="
     appid = "dj0zaiZpPUFrRFdZOUZLZDlRQyZzPWNvbnN1bWVyc2VjcmV0Jng9NTQ-" # 新たなappid
@@ -228,7 +229,7 @@ class ApplicationController < ActionController::Base
     doc.xpath('//feature').each do |node|
        return node.at("distance").inner_text
     end
-    return false
+    return nil
   end
 
   # http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/reviewsearch.html
@@ -256,7 +257,7 @@ class ApplicationController < ActionController::Base
       sum_rate += hash["rate"].to_i
       rate_count += 1
     end
-    return false if reviews.blank?
+    return nil if reviews.blank?
 
     # if rate_count != 0
     #   average = sum_rate / rate_count
@@ -277,7 +278,7 @@ class ApplicationController < ActionController::Base
       sum_rate += rate_node.inner_text.to_i
       rate_count += 1
     end
-    return false if rate_count == 0
+    return nil if rate_count == 0
     averate = sum_rate / rate_count
     return averate.round(1)
   end

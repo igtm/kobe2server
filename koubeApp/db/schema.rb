@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140920033703) do
+ActiveRecord::Schema.define(version: 20140927171028) do
 
   create_table "contents", force: true do |t|
     t.string   "title"
@@ -53,6 +53,24 @@ ActiveRecord::Schema.define(version: 20140920033703) do
     t.float    "latitude"
     t.float    "longitude"
     t.float    "distance_km"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "yahoos", force: true do |t|
+    t.string   "title"
+    t.string   "categoryDetail"
+    t.string   "category"
+    t.string   "category_disp"
+    t.float    "shoplon"
+    t.float    "shoplat"
+    t.text     "image"
+    t.boolean  "imageFlag"
+    t.text     "uid"
+    t.float    "distance_km"
+    t.float    "rate"
+    t.integer  "rank"
+    t.string   "db_output"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

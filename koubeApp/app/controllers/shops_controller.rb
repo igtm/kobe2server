@@ -8,7 +8,16 @@ class ShopsController <  BaseShopController
     def list
       page_num = params[:page]
       page_num = 1 if params[:page].blank?
+      page_num = page_num.to_i
       results = []
+      if page_num <= 2
+        results = getYahooDB("list","Restaurant Clothing",page_num)
+        variety_scraping(results,page_num,3)
+        results = sort_category_list(results,["Restaurant","Clothing","Variety"])
+        render_json(results)
+        return        
+      end
+
       # +3clothing +4restaurant
       setKobeInfoList(page_num,"all",results)
       # +3shop
@@ -41,11 +50,42 @@ class ShopsController <  BaseShopController
     def restaurant
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
+      if page_num <= 1
+        results = getYahooDB("only","Restaurant",page_num)
+        render_json(results)
+        return
+      end
+      
       setKobeInfoList(page_num,"restaurant",results)
-#      gurume_rank_scraping(results,page_num,3)
+      # gurume_rank_scraping(results,page_num,3)
       results = exchange(results)
       results = addRank(results) if page_num == 1 # 1~3位にランク付け 
       render_json(results)
+    end
+
+    # @db_output="list"/"only"
+    # @_category="Restaurant"/"Clothing"/
+    def getYahooDB(db_output,_category,page_num)
+      results = []
+      page_size = 10
+      page_size = 7 if db_output == "list"
+      
+      yahoo = Yahoo.search_category(_category).where("db_output == ?",db_output)
+      yahoo = yahoo.order("rate DESC") if _category == "Restaurant"
+      
+      count = 0
+      yahoo.limit(page_size).offset(page_size * (page_num-1)).map{ |e|
+        hash = {"uid"=>e.uid,"title"=>e.title,"imageFlag"=>e.imageFlag,"image"=>e.image,
+            "category"=>e.category,"categoryDetail"=>e.categoryDetail,"category_disp"=>e.category_disp,"rate"=>e.rate,
+            "shoplat"=>e.shoplat,"shoplon"=>e.shoplon}
+        #rankある場合のみ
+        if _category == "Restaurant" && count <= 2
+          count += 1
+          hash["rank"] = count
+        end
+        results.push(hash)
+      }
+      return results
     end
 
     # 食事オシャレお店のスクレイピング
@@ -62,8 +102,13 @@ class ShopsController <  BaseShopController
     def clothing
       page_num = params[:page].blank? ? 1 : params[:page].to_i
       results = []
-      yahooLocalSearch(nil,nil,page_num,10,"clothing",results)
+      if page_num <= 2
+        results = getYahooDB("only","Clothing",page_num)
+        render_json(results)
+        return
+      end
 
+      yahooLocalSearch(nil,nil,page_num,10,"clothing",results)
       render_json(results)
     end
 

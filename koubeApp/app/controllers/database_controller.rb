@@ -1,4 +1,6 @@
-class DatabaseController < ApplicationController
+require File.expand_path('../base_shop_controller.rb', __FILE__)
+
+class DatabaseController < BaseShopController
 	
 	# /database/update
 	# DBの更新
@@ -9,8 +11,21 @@ class DatabaseController < ApplicationController
 			content = Content.new(hash)
 			content.save unless Content.exists?(title:hash["title"]) #一度保存したら新規保存しない
 		end
-		content = Content.all # 試し表示
-		render_json(content)
+
+		listYahoo = list_yahoo()
+		listYahoo.each do |hash|
+			yahoo = Yahoo.new(hash)
+			yahoo.save(hash) unless Yahoo.exists?(title:hash["title"],db_output:hash["db_output"]) #一度保存したら新規保存しない
+		end
+		
+		onlyYahoo = list_one_category_yahoo()
+		onlyYahoo.each do |hash|
+			yahoo = Yahoo.new(hash)
+			yahoo.save(hash) unless Yahoo.exists?(title:hash["title"],db_output:hash["db_output"]) #一度保存したら新規保存しない
+		end
+
+		yahoo = Yahoo.all # 試し表示
+		render_json(yahoo)
 	end
 
 	# /event/list.json
@@ -23,12 +38,39 @@ class DatabaseController < ApplicationController
 		feelkobe_scraping(all)
 
 		zakka30min(all)
-		rankingshare(all)
+		#rankingshare(all)
+
 	    # sort
 	    all = all.sort_by{|hash| hash['title']}
 	    return all
 	end
-	
+
+	def list_yahoo
+		all = []
+		setKobeInfoList(1,"all",all)
+		setKobeInfoList(2,"all",all)
+		all.each do |hash|
+			hash["db_output"] = "list"
+		end
+		return all
+	end
+
+	def list_one_category_yahoo
+		all = []
+		setKobeInfoList(1,"restaurant",all)
+		setKobeInfoList(2,"restaurant",all)
+		setKobeInfoList(1,"clothing",all)
+		setKobeInfoList(2,"clothing",all)
+		all.each do |hash|
+			hash["db_output"] = "only"
+		end
+		return all
+	end
+
+	# page=1~5のリストを予めに取得してyahooDBに保存
+	# {:list=>[{}],:restaurnt=>[{}],:clothing=>[{}] }
+
+
 	#TODO:画像がロードになる．理由:スクロールによって画像がロードになる．
 	def rankingshare(array)
 		# url = "http://www.rankingshare.jp/tag/492497/"
@@ -52,8 +94,6 @@ class DatabaseController < ApplicationController
 		# 	end
 		# end
 	end
-
-
 
 	def zakka30min(array)
 		urls = ['http://zakka.30min.jp/hyogo/1','http://zakka.30min.jp/hyogo/2']
